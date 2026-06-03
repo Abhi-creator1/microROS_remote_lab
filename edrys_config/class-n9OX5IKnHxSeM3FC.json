@@ -1,0 +1,210 @@
+{
+  "id": "n9OX5IKnHxSeM3FC",
+  "createdBy": "BL8CNNOkAJGNpdR/k6eBTJKUkBda/ux9qlDO1J+XmO2LY+1go6tBvf+Fw8TjQL9BXkWndvADxRX1iEDmmQp1VZQ=",
+  "dateCreated": 1761768674648,
+  "name": "MicroROS_edu",
+  "meta": {
+    "logo": "",
+    "description": "A remote robotics laboratory that enables hands-on learning of ROS 2, micro-ROS, robot modeling, motion planning, and real robot control through interaction with physical robotic hardware",
+    "selfAssign": true,
+    "defaultNumberOfRooms": "3"
+  },
+  "members": {
+    "teacher": [],
+    "student": [
+      "*"
+    ]
+  },
+  "modules": [
+    {
+      "url": "https://edrys-labs.github.io/module-pyxtermjs/index.html",
+      "config": "",
+      "studentConfig": "",
+      "teacherConfig": "",
+      "stationConfig": {
+        "server": "http://localhost:5000/pty",
+        "execute": "",
+        "script": "",
+        "enable": {
+          "student": false,
+          "teacher": false
+        }
+      },
+      "showInCustom": "microros",
+      "width": 800,
+      "height": "tall"
+    },
+    {
+      "url": "https://edrys-labs.github.io/module-station-stream/index.html",
+      "config": "",
+      "studentConfig": "",
+      "teacherConfig": "",
+      "stationConfig": {
+        "video": true,
+        "audio": false,
+        "mirrorX": false,
+        "mirrorY": false,
+        "rotate": 0
+      },
+      "showInCustom": "microros",
+      "width": "half",
+      "height": "medium"
+    },
+    {
+      "url": "https://abhi-creator1.github.io/module-xpra-gui/index.html",
+      "config": "",
+      "studentConfig": "",
+      "teacherConfig": "",
+      "stationConfig": "",
+      "showInCustom": "Station ros",
+      "width": 800,
+      "height": "tall"
+    },
+    {
+      "url": "https://edrys-labs.github.io/module-pyxtermjs/index.html",
+      "config": "",
+      "studentConfig": "",
+      "teacherConfig": "",
+      "stationConfig": {
+        "server": "http://localhost:5000/pty",
+        "execute": "",
+        "script": "",
+        "enable": {
+          "student": true,
+          "teacher": true
+        }
+      },
+      "showInCustom": "Station ros",
+      "width": "full",
+      "height": "tall"
+    },
+    {
+      "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
+      "config": {
+        "content": "# Useful commands\n\nUse tmux to split the terminal and enable mouse:\n```\ntmux new-session -s mysession \\; set -g mouse on \\; split-window -h \\; attach\n```\n#in case of display issue run this:\n\n```\nxpra start :100 --bind-tcp=0.0.0.0:14500 --html=on --daemon=yes --xvfb=\"Xvfb :100 -screen 0 1280x800x24\"\n\n```"
+      },
+      "studentConfig": {
+        "content": ""
+      },
+      "teacherConfig": {
+        "content": ""
+      },
+      "stationConfig": {
+        "content": ""
+      },
+      "showInCustom": "Station ros",
+      "width": "half",
+      "height": "medium"
+    },
+    {
+      "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
+      "config": {
+        "content": "# MODULE 1\n\n## micro-ROS Based Microcontroller Control\n\n### Module Focus\n\nIn this module, you will **run micro-ROS directly on a microcontroller** and control basic hardware (LED) using ROS 2 communication.\n\nThis module is your **first contact with micro-ROS firmware**, not Arduino-only sketches.\n\n---\n\n## Before You Start\n\n* ROS 2 and the micro-ROS Agent are already installed in the Docker environment\n* A helper script is provided to install the micro-ROS build system when needed\n* You will be working with **ESP32 or Teensy** (provided by the lab)\n* You should be comfortable using:\n\n  * Terminal\n  * Basic C/C++ or Arduino-style code\n  * ROS 2 topics and nodes\n\n📘 **Reference (optional, detailed):**\n\nIf you want deeper background or theory, refer to:\n\nhttps://micro.ros.org/docs/tutorials/core/overview/\n\n---\n\n## Learning Outcomes\n\nBy the end of this module, you should be able to:\n\n* Build and flash micro-ROS firmware on a microcontroller\n* Run a micro-ROS node on ESP32 or Teensy\n* Communicate with ROS 2 using topics\n* Control a physical LED from ROS 2\n\n---\n\n## System Architecture\n\n```text\nROS 2 (Docker)\n      |\nmicro-ROS Agent\n      |\nESP32 / Teensy (micro-ROS Node)\n      |\nGPIO → LED\n```\n\n---\n\n## Practical 1: micro-ROS Firmware Setup (ESP32 / Teensy)\n\n### Objective\n\nCreate and flash micro-ROS firmware for your microcontroller.\n\n---\n\n### Step 1: Identify Your Board\n\nDetermine which board you are using:\n\n* ESP32\n  or\n* Teensy\n\nYou must know:\n\n* Board model\n* USB device name (e.g. `/dev/ttyUSB0` or `/dev/ttyACM0`)\n\n---\n\n### Step 2: Install the micro-ROS Build System (One-Time Setup)\n\nThe Docker environment provides a helper script that installs the official micro-ROS build system.\n\nRun:\n\n```bash\nmicroros_install\n```\n\nThis script will:\n\n* Create a workspace at:\n\n```text\n~/workspace/microros_ws\n```\n\n* Download the `micro_ros_setup` package\n* Install required dependencies\n* Build the micro-ROS build system\n* Configure the environment automatically\n\nVerify the installation:\n\n```bash\nsource ~/workspace/microros_ws/install/local_setup.bash\n```\n\nCheck that the build system is available:\n\n```bash\nros2 run micro_ros_setup --help\n```\n\nIf the workspace becomes corrupted or you want to start again:\n\n```bash\nmicroros_clean\nmicroros_install\n```\n\n---\n\n### Step 3: Create micro-ROS Firmware Workspace\n\nCreate a firmware workspace using the micro-ROS build system.\n\nSelect the correct RTOS / platform:\n\n* ESP32 → ESP-IDF\n* Teensy → Arduino\n\nExample for ESP32:\n\n```bash\nros2 run micro_ros_setup create_firmware_ws.sh freertos esp32\n```\n\nExample for Teensy:\n\n```bash\nros2 run micro_ros_setup create_firmware_ws.sh arduino teensy\n```\n\n⚠️ **Important:**\n\nDo not mix Arduino-only sketches with micro-ROS firmware.\n\nThis step creates a micro-ROS firmware workspace and downloads the platform-specific toolchain required for your board.\n\n---\n\n### Step 4: Configure Firmware\n\nConfigure the firmware for:\n\n* Your board\n* Serial transport\n* Correct baud rate\n\nYou should end this step with:\n\n* A successful firmware build\n* No unresolved dependencies\n\nIf you are stuck, consult the micro-ROS documentation linked above.\n\n---\n\n### Step 5: Flash the Firmware\n\nFlash the generated firmware to:\n\n* ESP32\n  or\n* Teensy\n\nVerify:\n\n* Device is detected\n* Flashing completes without errors\n\n---\n\n## Practical 2: Running the micro-ROS Agent\n\n### Objective\n\nEnable communication between ROS 2 and your microcontroller.\n\n---\n\nIn a new terminal inside Docker:\n\n* Start the micro-ROS Agent using serial transport\n* Use the correct device name\n\nOnce running, the agent should:\n\n* Stay active\n* Show connection logs when the board connects\n\nDo not proceed unless the agent is running correctly.\n\n---\n\n## Practical 3: LED Blink Using micro-ROS Node\n\n### Objective\n\nControl an LED using a micro-ROS node running on the microcontroller.\n\n---\n\n### Task Description\n\nYou will implement a micro-ROS node that:\n\n* Initializes a ROS 2 node on the microcontroller\n* Uses a timer callback\n* Toggles an LED at a fixed interval\n\n---\n\n### Requirements\n\nYour implementation must:\n\n* Use micro-ROS APIs\n* Avoid blocking delays (`delay()`, infinite loops)\n* Toggle a GPIO-connected LED\n* Run continuously while the agent is active\n\n---\n\n### Expected Behavior\n\n* LED blinks at a fixed frequency\n* micro-ROS Agent shows an active connection\n* Node appears in ROS 2 node list\n\n---\n\n## Practical 4: LED Control via ROS 2 Topic\n\n### Objective\n\nControl the LED from the ROS 2 side.\n\n---\n\n### Task Description\n\nModify your firmware so that:\n\n* The micro-ROS node subscribes to a ROS 2 topic\n* Message type: `std_msgs/msg/Bool`\n* LED turns:\n\n  * ON when message is `true`\n  * OFF when message is `false`\n\n---\n\n### ROS 2 Side Tasks\n\nFrom another terminal:\n\n* List active topics\n* Publish messages to your LED control topic\n* Observe LED response in real time\n\n---\n\n## Validation Checklist\n\nBefore moving on, confirm:\n\n* [ ] micro-ROS Agent is running\n* [ ] Board connects successfully\n* [ ] micro-ROS node appears in ROS 2\n* [ ] LED blinks using timer\n* [ ] LED responds to ROS 2 topic messages\n\n---\n\n## Deliverables\n\nSubmit:\n\n1. Firmware source code\n\n2. Screenshot or log of:\n\n   * micro-ROS Agent running\n   * ROS 2 topic interaction\n\n3. Short explanation (max 150 words):\n\n   * Board used\n   * Topic name\n   * GPIO pin used\n   * Any issues faced\n\n---\n\n## Common Issues & Hints\n\n* If the node does not appear → Agent is not connected\n* If flashing fails → Check board permissions\n* If the micro-ROS build system is unavailable → Run `microros_install`\n* If LED does not blink → Verify GPIO pin mapping\n* If messages lag → Reduce executor workload\n\n---\n\n## What You Should Understand After This Module\n\n* micro-ROS ≠ Arduino Serial\n* Microcontrollers can be real ROS 2 nodes\n* ROS 2 can directly control hardware\n* Firmware design matters more than code size\n\n---\n\n### End of Module 1\n\n**Proceed to Module 2 only after successful validation**\n"
+      },
+      "studentConfig": {
+        "content": ""
+      },
+      "teacherConfig": {
+        "content": ""
+      },
+      "stationConfig": {
+        "content": ""
+      },
+      "showInCustom": "Room 1",
+      "width": 900,
+      "height": "huge"
+    },
+    {
+      "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
+      "config": {
+        "content": "# MODULE 1 – SOLVED REFERENCE\n\n## micro-ROS Based Microcontroller Control\n\n⚠️ **This is a reference solution.**\nStudents are expected to attempt the module **before** consulting this.\n\n---\n\n## Assumptions\n\n* ROS 2 + micro-ROS Agent are already installed in Docker\n* Board used: **ESP32 Dev Module**\n  (Teensy notes included at the end)\n* Serial device: `/dev/ttyUSB0`\n* LED connected to **GPIO 2** (onboard LED for most ESP32)\n\n---\n\n## 1. Create micro-ROS Firmware Workspace (ESP32)\n\nInside the ROS 2 Docker container:\n\n```bash\nsource /opt/ros/humble/setup.bash\n```\n\nCreate firmware workspace:\n\n```bash\nmkdir -p ~/microros_firmware\ncd ~/microros_firmware\n```\n\nClone micro-ROS build system:\n\n```bash\ngit clone https://github.com/micro-ROS/micro_ros_setup.git src/micro_ros_setup\n```\n\nInstall dependencies:\n\n```bash\nrosdep update\nrosdep install --from-paths src --ignore-src -y\n```\n\nBuild micro-ROS tools:\n\n```bash\ncolcon build\nsource install/local_setup.bash\n```\n\n---\n\n## 2. Create ESP32 Firmware\n\nCreate firmware workspace for ESP32:\n\n```bash\nros2 run micro_ros_setup create_firmware_ws.sh freertos esp32\n```\n\nConfigure firmware:\n\n```bash\nros2 run micro_ros_setup configure_firmware.sh serial\n```\n\n> When prompted:\n\n* Select correct ESP32 board\n* Select default UART\n* Keep default baud rate unless instructed otherwise\n\n---\n\n## 3. Add LED Blink micro-ROS App\n\nNavigate to apps directory:\n\n```bash\ncd firmware/freertos_apps/apps\n```\n\nCreate a new app:\n\n```bash\nmkdir led_blink\ncd led_blink\n```\n\nCreate `app.c`:\n\n```c\n#include <rcl/rcl.h>\n#include <rclc/rclc.h>\n#include <rclc/executor.h>\n#include <std_msgs/msg/bool.h>\n\n#include \"freertos/FreeRTOS.h\"\n#include \"freertos/task.h\"\n#include \"driver/gpio.h\"\n\n#define LED_PIN GPIO_NUM_2\n\nrcl_timer_t timer;\nrclc_executor_t executor;\nrcl_node_t node;\nrcl_allocator_t allocator;\nrclc_support_t support;\n\nbool led_state = false;\n\nvoid timer_callback(rcl_timer_t * timer, int64_t last_call_time)\n{\n    (void) last_call_time;\n    if (timer != NULL) {\n        led_state = !led_state;\n        gpio_set_level(LED_PIN, led_state);\n    }\n}\n\nvoid appMain(void * arg)\n{\n    allocator = rcl_get_default_allocator();\n\n    rclc_support_init(&support, 0, NULL, &allocator);\n    rclc_node_init_default(&node, \"esp32_led_node\", \"\", &support);\n\n    rclc_timer_init_default(\n        &timer,\n        &support,\n        RCL_MS_TO_NS(500),\n        timer_callback\n    );\n\n    rclc_executor_init(&executor, &support.context, 1, &allocator);\n    rclc_executor_add_timer(&executor, &timer);\n\n    gpio_reset_pin(LED_PIN);\n    gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);\n\n    while (1) {\n        rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));\n        vTaskDelay(10 / portTICK_PERIOD_MS);\n    }\n}\n```\n\nRegister app:\n\n```bash\ncd ..\nnano CMakeLists.txt\n```\n\nAdd:\n\n```cmake\nadd_subdirectory(led_blink)\n```\n\n---\n\n## 4. Build and Flash Firmware\n\nReturn to firmware root:\n\n```bash\ncd ~/microros_firmware\n```\n\nBuild firmware:\n\n```bash\nros2 run micro_ros_setup build_firmware.sh\n```\n\nFlash to ESP32:\n\n```bash\nros2 run micro_ros_setup flash_firmware.sh\n```\n\n---\n\n## 5. Run micro-ROS Agent\n\nOpen a **new terminal**:\n\n```bash\nsource /opt/ros/humble/setup.bash\nros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0\n```\n\nExpected output:\n\n```\n[INFO] Connected to serial device\n[INFO] Session established\n```\n\n---\n\n## 6. Verify micro-ROS Node\n\nOpen another terminal:\n\n```bash\nsource /opt/ros/humble/setup.bash\nros2 node list\n```\n\nExpected:\n\n```\n/esp32_led_node\n```\n\nLED should now **blink every 500 ms**.\n\n---\n\n## 7. LED Control via ROS 2 Topic (Solved)\n\n### Modify Firmware\n\nAdd subscriber:\n\n```c\nstd_msgs__msg__Bool led_msg;\nrcl_subscription_t subscriber;\n\nvoid led_callback(const void * msgin)\n{\n    const std_msgs__msg__Bool * msg = (const std_msgs__msg__Bool *)msgin;\n    gpio_set_level(LED_PIN, msg->data);\n}\n```\n\nInitialize subscriber inside `appMain()`:\n\n```c\nrclc_subscription_init_default(\n    &subscriber,\n    &node,\n    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),\n    \"led_control\"\n);\n\nrclc_executor_add_subscription(\n    &executor,\n    &subscriber,\n    &led_msg,\n    &led_callback,\n    ON_NEW_DATA\n);\n```\n\nRebuild & flash again:\n\n```bash\nros2 run micro_ros_setup build_firmware.sh\nros2 run micro_ros_setup flash_firmware.sh\n```\n\n---\n\n## 8. Control LED from ROS 2\n\nPublish ON:\n\n```bash\nros2 topic pub /led_control std_msgs/msg/Bool \"{data: true}\"\n```\n\nPublish OFF:\n\n```bash\nros2 topic pub /led_control std_msgs/msg/Bool \"{data: false}\"\n```\n\nLED should respond immediately.\n\n---\n\n## 9. Validation (Solved)\n\n✔ micro-ROS Agent running\n✔ ESP32 connected\n✔ Node visible in ROS 2\n✔ LED blinks (timer)\n✔ LED controlled via ROS 2 topic\n\n---\n\n## Teensy Notes (Alternative Board)\n\nFor **Teensy**:\n\n```bash\nros2 run micro_ros_setup create_firmware_ws.sh arduino teensy\n```\n\n* Use Arduino framework\n* GPIO pin depends on Teensy model\n* Flashing is done via Teensy Loader\n\n---"
+      },
+      "studentConfig": {
+        "content": ""
+      },
+      "teacherConfig": {
+        "content": ""
+      },
+      "stationConfig": {
+        "content": ""
+      },
+      "showInCustom": "Room 1",
+      "width": 900,
+      "height": "huge"
+    },
+    {
+      "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
+      "config": {
+        "content": "# MODULE 2\n\n## RViz Visualization & GUI-Based Robot Control\n\n---\n\n## Module Focus\n\nIn this module, you will **visualize and control a robot in simulation** using ROS 2 tools.\n\nYou will work with:\n\n* URDF robot descriptions\n* RViz visualization\n* Joint State Publisher GUI\n* Launch files\n* MoveIt for motion planning\n\n⚠️ **No real hardware is used in this module**\nThis module prepares you for **real robot control in Module 4**.\n\n---\n\n## Before You Start\n\n* ROS 2 is running inside Docker\n* RViz is available\n* MoveIt is preinstalled\n* You have access to:\n\n  * ASRS robot URDF files\n  * A basic ROS 2 workspace\n\nYou should already understand:\n\n* ROS 2 nodes and topics\n* Package structure\n* Basic launch files\n\n---\n\n## Learning Outcomes\n\nBy the end of this module, you should be able to:\n\n* Understand and modify a URDF robot model\n* Visualize a robot in RViz\n* Control joints using GUI tools\n* Create launch files for visualization\n* Plan motion using MoveIt in RViz\n\n---\n\n## System Architecture\n\n```\nURDF → Robot State Publisher → TF\n                     ↓\n              RViz Visualization\n                     ↓\n          Joint / Pose Commands\n                     ↓\n                 MoveIt\n```\n\n---\n\n## Practical 1: URDF Exploration\n\n### Objective\n\nUnderstand the structure of the ASRS robot model.\n\n---\n\n### Task Description\n\nYou are provided with a URDF (or Xacro) file describing a **4-DOF ASRS robot**.\n\nYou must:\n\n* Open the URDF file\n* Identify:\n\n  * Links\n  * Joints\n  * Joint types\n  * Joint limits\n  * Parent–child relationships\n\n---\n\n### Tasks\n\n1. Locate the robot description package\n2. Identify all joints and their degrees of freedom\n3. Answer:\n\n   * How many links does the robot have?\n   * Which joint is fixed?\n   * Which joints are revolute?\n\n✍️ Document your findings.\n\n---\n\n## Practical 2: Visualizing the Robot in RViz\n\n### Objective\n\nLoad the robot model and visualize it correctly in RViz.\n\n---\n\n### Task Description\n\nYou must:\n\n* Start `robot_state_publisher`\n* Load the robot description\n* Launch RViz\n* Display the robot model and TF tree\n\n---\n\n### Requirements\n\nYour RViz setup must include:\n\n* RobotModel\n* TF\n* Fixed Frame correctly set\n\n---\n\n### Expected Result\n\n* Robot appears correctly in RViz\n* No missing TF errors\n* Links move correctly when joint states change\n\n---\n\n## Practical 3: Joint Control Using GUI\n\n### Objective\n\nInteractively control robot joints.\n\n---\n\n### Task Description\n\nYou must:\n\n* Run a **Joint State Publisher GUI**\n* Manually move each joint\n* Observe changes in RViz\n\n---\n\n### Tasks\n\n* Move each joint independently\n* Verify joint limits are respected\n* Identify any incorrect axes or directions\n\n⚠️ If something moves incorrectly, **do not fix it yet**.\nNote it down.\n\n---\n\n## Practical 4: Launch File Creation\n\n### Objective\n\nAutomate the visualization setup.\n\n---\n\n### Task Description\n\nCreate a ROS 2 launch file that starts:\n\n* Robot state publisher\n* Joint state publisher GUI\n* RViz\n\n---\n\n### Requirements\n\n* One launch file\n* One command to start everything\n* RViz should load a preconfigured view\n\n---\n\n## Practical 5: MoveIt Visualization & Planning\n\n### Objective\n\nPlan robot motion using MoveIt in RViz.\n\n---\n\n### Task Description\n\nYou must:\n\n* Load the robot into MoveIt\n* Open RViz with MoveIt plugin enabled\n* Plan motion for:\n\n  * Joint space goals\n  * Cartesian pose goals\n\n---\n\n### Tasks\n\n* Set a target pose\n* Generate a motion plan\n* Execute the plan (simulation only)\n\n⚠️ **Do NOT connect to real hardware**\n\n---\n\n## Validation Checklist\n\nBefore proceeding:\n\n* [ ] Robot loads correctly in RViz\n* [ ] TF tree is complete\n* [ ] Joint State Publisher controls all joints\n* [ ] Launch file works from a single command\n* [ ] MoveIt can plan valid trajectories\n\n---\n\n## Deliverables\n\nSubmit:\n\n1. Modified URDF (if any)\n2. Launch file\n3. Screenshot of:\n\n   * RViz with RobotModel + TF\n   * MoveIt planning scene\n4. Short explanation (max 200 words):\n\n   * Robot DOF\n   * Any URDF issues found\n   * Planning success or failure\n\n---\n\n## Common Issues & Hints\n\n* TF errors usually mean missing joints\n* Wrong joint axis → strange motion\n* Fixed frame mismatch → RViz shows nothing\n* Planning failure often means:\n\n  * Wrong joint limits\n  * Self-collision\n  * Missing planning groups\n\n---\n\n## What You Should Understand After This Module\n\n* URDF defines **what the robot is**\n* RViz shows **what the robot looks like**\n* MoveIt decides **how the robot moves**\n* Simulation must work before real hardware\n\n---\n\n### End of Module 2\n\n**Proceed to Module 4 only after successful validation**\n\n---\n"
+      },
+      "studentConfig": {
+        "content": ""
+      },
+      "teacherConfig": {
+        "content": ""
+      },
+      "stationConfig": {
+        "content": ""
+      },
+      "showInCustom": "Room 2",
+      "width": 900,
+      "height": "huge"
+    },
+    {
+      "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
+      "config": {
+        "content": "\n# MODULE 2 – SOLVED REFERENCE\n\n## RViz Visualization & GUI-Based Robot Control\n\n⚠️ **This is a solved reference implementation.**\nStudents are expected to attempt the module **before** using this material.\n\n**Reference Repository:**\n👉 [https://github.com/Abhi-creator1/RobotArm-IKdsolver](https://github.com/Abhi-creator1/RobotArm-IKdsolver)\n\n---\n\n## Assumptions\n\n* ROS 2 is running inside Docker\n* RViz is available\n* MoveIt 2 is preinstalled\n* The repository above is accessible inside the workspace\n* Robot: **4-DOF ASRS Robot**\n\n---\n\n## 1. Workspace Setup\n\nInside the ROS 2 Docker container:\n\n```bash\nsource /opt/ros/humble/setup.bash\n```\n\nCreate a workspace (if not already present):\n\n```bash\nmkdir -p ~/ros2_ws/src\ncd ~/ros2_ws/src\n```\n\nClone the reference repository:\n\n```bash\ngit clone https://github.com/Abhi-creator1/RobotArm-IKdsolver.git\n```\n\nBuild the workspace:\n\n```bash\ncd ~/ros2_ws\ncolcon build\nsource install/setup.bash\n```\n\n---\n\n## 2. URDF Exploration (Solved)\n\n### Location of URDF\n\n```bash\nros2_ws/src/RobotArm-IKdsolver/urdf/\n```\n\nMain file:\n\n```\nrobot_arm.urdf\n```\n\n(or Xacro equivalent if used)\n\n---\n\n### Robot Structure (Solved)\n\n* **Degrees of Freedom:** 4\n* **Joint Types:**\n\n  * Base joint – revolute\n  * Shoulder – revolute\n  * Elbow – revolute\n  * Wrist – revolute\n* **Fixed Joints:**\n\n  * Base link to world (if defined)\n\nEach joint specifies:\n\n* `origin` (position & orientation)\n* `axis`\n* `limit` (lower, upper, velocity, effort)\n\n---\n\n## 3. Visualizing the Robot in RViz (Solved)\n\n### Start Robot State Publisher\n\n```bash\nros2 run robot_state_publisher robot_state_publisher \\\n  ~/ros2_ws/src/RobotArm-IKdsolver/urdf/robot_arm.urdf\n```\n\n### Start Joint State Publisher GUI\n\n```bash\nros2 run joint_state_publisher_gui joint_state_publisher_gui\n```\n\n### Start RViz\n\n```bash\nrviz2\n```\n\n---\n\n### RViz Configuration\n\nIn RViz:\n\n1. Set **Fixed Frame** → `base_link`\n2. Add Displays:\n\n   * RobotModel\n   * TF\n\n✅ Robot should now appear correctly.\n\n---\n\n## 4. Joint Control Using GUI (Solved)\n\nUsing **Joint State Publisher GUI**:\n\n* Move each joint slider\n* Observe:\n\n  * Correct axis of rotation\n  * Joint limits enforced\n  * Proper parent–child transformations\n\n✔ All joints respond correctly\n✔ No TF errors observed\n\n---\n\n## 5. Launch File (Solved)\n\n### Launch File Location\n\n```bash\nros2_ws/src/RobotArm-IKdsolver/launch/display.launch.py\n```\n\n### Example Launch File\n\n```python\nfrom launch import LaunchDescription\nfrom launch_ros.actions import Node\n\ndef generate_launch_description():\n\n    return LaunchDescription([\n        Node(\n            package='robot_state_publisher',\n            executable='robot_state_publisher',\n            arguments=['/home/user/ros2_ws/src/RobotArm-IKdsolver/urdf/robot_arm.urdf']\n        ),\n        Node(\n            package='joint_state_publisher_gui',\n            executable='joint_state_publisher_gui'\n        ),\n        Node(\n            package='rviz2',\n            executable='rviz2',\n            arguments=['-d', '/home/user/ros2_ws/src/RobotArm-IKdsolver/rviz/robot_arm.rviz']\n        )\n    ])\n```\n\n---\n\n### Run Everything with One Command\n\n```bash\nros2 launch robotarm_ik display.launch.py\n```\n\n✔ RViz opens\n✔ Robot loads\n✔ GUI controls joints\n\n---\n\n## 6. MoveIt Setup Assistant (Solved)\n\n### Start MoveIt Setup Assistant\n\n```bash\nros2 launch moveit_setup_assistant setup_assistant.launch.py\n```\n\n---\n\n### MoveIt Configuration Steps\n\n#### 1. Load URDF\n\n* Load `robot_arm.urdf`\n\n#### 2. Self-Collision Matrix\n\n* Generate collision matrix (default settings)\n\n#### 3. Virtual Joints\n\n* Add:\n\n  * Type: `fixed`\n  * Parent frame: `world`\n  * Child link: `base_link`\n\n#### 4. Planning Groups\n\n* Create group: `arm`\n* Kinematic chain:\n\n  * Base → End-effector\n\n#### 5. End Effector\n\n* Define wrist/end-effector link\n\n#### 6. Robot Poses\n\n* Add a default pose (e.g. `home`)\n\n#### 7. Controllers\n\n* Use default ROS 2 controllers (simulation)\n\n#### 8. Generate Package\n\n* Generate MoveIt config package inside:\n\n  ```\n  ros2_ws/src/\n  ```\n\n---\n\n## 7. MoveIt + RViz (Solved)\n\nBuild workspace again:\n\n```bash\ncd ~/ros2_ws\ncolcon build\nsource install/setup.bash\n```\n\nLaunch MoveIt:\n\n```bash\nros2 launch robotarm_moveit_config demo.launch.py\n```\n\n---\n\n### In RViz (MoveIt Plugin)\n\n* Enable **MotionPlanning**\n* Select planning group: `arm`\n* Set:\n\n  * Joint goals\n  * Cartesian pose goals\n* Click **Plan**\n* Click **Execute**\n\n✔ Planning succeeds\n✔ Robot animates in RViz\n✔ No real hardware involved\n\n---\n\n## 8. Validation (Solved)\n\n✔ URDF loads without errors\n✔ TF tree complete\n✔ GUI joint control works\n✔ Single launch file setup\n✔ MoveIt planning successful\n\n---\n\n## 9. Key Learning Outcomes (Instructor Intent)\n\n* URDF correctness is **critical**\n* RViz only visualizes what URDF defines\n* MoveIt depends heavily on:\n\n  * Joint limits\n  * Correct kinematic chain\n* Setup Assistant is the **standard industry workflow**\n\n---\n\n## How This Prepares You for Module 4\n\nAfter this module, students now understand:\n\n* Robot description\n* Visualization\n* Motion planning\n* Launch automation\n\n➡️ In **Module 4**, the *same MoveIt output* will be sent to:\n\n```\nMoveIt → micro-ROS → Real Robot\n```\n\n---"
+      },
+      "studentConfig": {
+        "content": ""
+      },
+      "teacherConfig": {
+        "content": ""
+      },
+      "stationConfig": {
+        "content": ""
+      },
+      "showInCustom": "Room 2",
+      "width": 900,
+      "height": "huge"
+    },
+    {
+      "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
+      "config": {
+        "content": "# MODULE 3\n\n# Motion Control of ASRS Robot\n\n---\n\n## Module Focus\n\nIn this module, you will control a real 4-DOF ASRS robotic arm using ROS 2, MoveIt, and micro-ROS.\n\nThe robot hardware is located in the laboratory and connected to a Teensy 4.1 microcontroller. Commands generated in ROS 2 are transmitted through micro-ROS to the robot, allowing remote operation from the Edrys platform.\n\nThis module combines everything learned in the previous modules:\n\n```text\nModule 1:\nROS 2 ↔ micro-ROS ↔ Microcontroller\n\nModule 2:\nURDF ↔ RViz ↔ MoveIt\n\nModule 3:\nMoveIt ↔ micro-ROS ↔ ASRS Robot\n```\n\n---\n\n## Before You Start\n\nYou should have completed:\n\n* Module 1: micro-ROS Based Microcontroller Control\n* Module 2: RViz Visualization and GUI-Based Robot Control\n\nYou should understand:\n\n* ROS 2 topics and nodes\n* micro-ROS communication\n* RViz\n* MoveIt planning\n* Basic robot kinematics\n\n---\n\n## Learning Outcomes\n\nBy the end of this module, you should be able to:\n\n* Understand the complete ASRS robot architecture\n* Execute robot motion on real hardware\n* Use MoveIt to generate trajectories\n* Observe closed-loop motion control\n* Compare simulation and real-world execution\n* Analyze robot feedback data\n* Perform simple pick-and-place operations\n\n---\n\n## Reference Project\n\nThis module is based on:\n\n👉 **[Closed-Loop Control and Trajectory Planning for a 4-DOF Robotic Arm](https://github.com/riitesh07/Closed-Loop-Control-and-Trajectory-Planning-for-a-4-DOF-Robotic-Arm?)**\n\n---\n\n## System Architecture\n\n```text\nMoveIt\n   ↓\nTrajectory Planning\n   ↓\nROS 2\n   ↓\nmicro-ROS Agent\n   ↓\nTeensy 4.1\n   ↓\nMotor Controllers\n   ↓\nASRS Robot\n   ↓\nSensor Feedback\n```\n\n---\n\n# Practical 1: System Exploration\n\n## Objective\n\nUnderstand the software and hardware architecture of the robot.\n\n---\n\n## Task Description\n\nExplore the running ROS 2 system.\n\nIdentify:\n\n* Active nodes\n* Topics\n* Robot interfaces\n* Motion control components\n\n---\n\n## Tasks\n\nList all ROS nodes:\n\n```bash\nros2 node list\n```\n\nList all ROS topics:\n\n```bash\nros2 topic list\n```\n\nInspect relevant topics:\n\n```bash\nros2 topic info <topic_name>\n```\n\n---\n\n## Questions\n\n1. Which node communicates with the robot?\n2. Which topics are used for motion commands?\n3. Which topics provide feedback?\n\n---\n\n# Practical 2: Observing Robot Feedback\n\n## Objective\n\nUnderstand closed-loop control.\n\n---\n\n## Task Description\n\nMonitor robot feedback while the robot is moving.\n\nObserve:\n\n```bash\nros2 topic echo /joint_states\n```\n\n---\n\n## Tasks\n\nRecord:\n\n* Joint positions\n* Joint velocities\n* Update frequency\n\nCompare values while the robot is stationary and moving.\n\n---\n\n## Questions\n\n1. Why is feedback important?\n2. What would happen if feedback were unavailable?\n3. How does feedback improve accuracy?\n\n---\n\n# Practical 3: Executing Predefined Motions\n\n## Objective\n\nExecute safe robot motions.\n\n---\n\n## Task Description\n\nThe instructor will provide predefined robot configurations.\n\nExamples:\n\n```text\nHome\nPick Position\nPlace Position\nInspection Position\n```\n\n---\n\n## Tasks\n\nMove the robot between provided positions.\n\nObserve:\n\n* RViz motion\n* Real robot motion\n* Camera feed\n\n---\n\n## Validation\n\nThe robot should reach all positions safely and consistently.\n\n---\n\n# Practical 4: MoveIt Execution on Real Hardware\n\n## Objective\n\nExecute MoveIt trajectories on the physical robot.\n\n---\n\n## Task Description\n\nUse MoveIt to:\n\n1. Select a target pose\n2. Generate a plan\n3. Execute the plan\n\nObserve:\n\n* Planned path in RViz\n* Actual robot motion\n\n---\n\n## Tasks\n\nExecute:\n\n### Joint-Space Goal\n\nSpecify target joint angles.\n\n### Cartesian Goal\n\nSpecify an end-effector position.\n\n---\n\n## Questions\n\n1. Does the robot follow the planned trajectory exactly?\n2. What differences exist between simulation and reality?\n3. What factors can introduce error?\n\n---\n\n# Practical 5: Pick-and-Place Task\n\n## Objective\n\nPerform a complete robot operation.\n\n---\n\n## Task Description\n\nCreate a simple sequence:\n\n```text\nHome\n↓\nPick Position\n↓\nTransfer Position\n↓\nPlace Position\n↓\nHome\n```\n\nusing MoveIt.\n\n---\n\n## Tasks\n\nPlan and execute the sequence.\n\nObserve:\n\n* Motion smoothness\n* Repeatability\n* Position accuracy\n\n---\n\n## Validation\n\nThe robot should successfully complete the full sequence.\n\n---\n\n# Practical 6: Simulation vs Real Robot\n\n## Objective\n\nCompare simulated and physical behavior.\n\n---\n\n## Task Description\n\nExecute the same trajectory:\n\n1. In RViz simulation\n2. On the real robot\n\n---\n\n## Questions\n\n1. Which behavior differs?\n2. What causes the differences?\n3. Why is simulation still useful?\n\n---\n\n# Validation Checklist\n\nBefore completing the module:\n\n* [ ] Robot architecture understood\n* [ ] ROS topics identified\n* [ ] Feedback data observed\n* [ ] Predefined motions executed\n* [ ] MoveIt trajectories executed on hardware\n* [ ] Pick-and-place task completed\n* [ ] Simulation and hardware compared\n\n---\n\n# Common Issues & Hints\n\n* Always verify the robot is within workspace limits.\n* Ensure the planning scene is collision-free.\n* Watch the live camera feed before executing trajectories.\n* If execution fails, inspect ROS topics and node status.\n* Compare RViz behavior with physical robot behavior.\n\n---\n\n# What You Should Understand After This Module\n\n* How ROS 2, MoveIt, and micro-ROS work together.\n* How trajectories are executed on hardware.\n* Why closed-loop control is important.\n* Differences between simulation and physical systems.\n* The complete software-to-hardware robotics workflow.\n\n---\n\n### End of Module 3\n\n**Congratulations. You have successfully operated a micro-ROS enabled ASRS robot remotely.**\n"
+      },
+      "studentConfig": {
+        "content": ""
+      },
+      "teacherConfig": {
+        "content": ""
+      },
+      "stationConfig": {
+        "content": ""
+      },
+      "showInCustom": "Room 3",
+      "width": 2000,
+      "height": "huge"
+    },
+    {
+      "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
+      "config": {
+        "content": "# Remote Robotics Laboratory\n\nWelcome to the micro-ROS Education Platform.\n\nThis remote laboratory provides hands-on experience with **ROS 2**, **micro-ROS**, **RViz**, **MoveIt**, and a real **4-DOF ASRS robotic arm**. Through Edrys Lite, you will interact with both simulation and physical hardware using a web browser.\n\n## Course Modules\n\n### Module 1 – micro-ROS Based Microcontroller Control\n\nLearn how ROS 2 communicates with microcontrollers using micro-ROS and control basic hardware.\n\n### Module 2 – RViz Visualization and GUI-Based Robot Control\n\nLearn robot modeling, visualization, and motion planning using URDF, RViz, and MoveIt.\n\n### Module 3 – Motion Control of ASRS Robot\n\nExecute trajectories and control a real robotic arm using the complete ROS 2 and micro-ROS stack.\n\n## Available Resources\n\n* ROS 2 Humble\n* micro-ROS\n* RViz\n* MoveIt\n* Camera Stream\n* Remote Terminal Access\n* Real Robot Hardware\n\n## Before You Begin\n\n* Complete the modules in order.\n* Follow the instructions provided in each module.\n* Use the camera feed to observe robot behavior.\n* Contact the instructor if you need assistance.\n\nEnjoy exploring modern robotics through real-world experimentation.\n\n## About This Platform\n\nThis remote robotics laboratory was created as an educational initiative at Hochschule Schmalkalden to provide hands-on learning experiences in ROS 2, micro-ROS, robot motion planning, and real-world robotic systems through remote access technologies."
+      },
+      "studentConfig": {
+        "content": ""
+      },
+      "teacherConfig": {
+        "content": ""
+      },
+      "stationConfig": {
+        "content": ""
+      },
+      "showInCustom": "lobby",
+      "width": "full",
+      "height": "tall"
+    }
+  ],
+  "setupSigner": "BL8CNNOkAJGNpdR/k6eBTJKUkBda/ux9qlDO1J+XmO2LY+1go6tBvf+Fw8TjQL9BXkWndvADxRX1iEDmmQp1VZQ=",
+  "setupSignature": "KKrignB04PJi/OPnd3zQYW55q4Bb8iIm36ZjU974cNTYtB6QA01BBKlMHpoGuGhYikv6wSmURR1+OI3AOWHfeQ=="
+}

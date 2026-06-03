@@ -1,0 +1,16 @@
+# ROS workspace
+workspace/
+
+# XPRA module maintained in separate repository
+module-xpra-gui/
+
+# Docker temporary files
+*.log
+
+# Editor files
+.vscode/
+.idea/
+
+# Python cache
+__pycache__/
+*.pyc

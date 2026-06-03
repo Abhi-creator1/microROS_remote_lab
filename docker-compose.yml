@@ -1,0 +1,35 @@
+services:
+  ros-humble-lab:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edrys-ros-lab
+
+    environment:
+      - LANG=en_US.UTF-8
+      - LC_ALL=en_US.UTF-8
+      - ROS_HOSTNAME=edrys-ros-lab
+      #- DISPLAY=${DISPLAY}
+
+    network_mode: 'host'
+    tty: true
+    privileged: true  # <-- Important for /dev access
+
+    volumes:
+      - ./workspace:/home/appuser/workspace
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+
+    devices:
+      - "/dev/ttyACM0:/dev/ttyACM0"
+      - "/dev/video0:/dev/video0"      # Webcam
+      - "usb2/2-2"
+    group_add:
+      - dialout
+      - video     # For Webcam
+
+
+    ports:
+      - "5000:5000"   # PyxtermJS
+      - "11311:11311" # ROS2 Master
+      - "7400-7500:7400-7500" # DDS range (simplify)
+     

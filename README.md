@@ -1,0 +1,1 @@
+Docker-based ROS 2 Humble environment for Edrys Lite remote robotics laboratories.
