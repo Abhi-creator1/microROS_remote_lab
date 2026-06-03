@@ -4,7 +4,7 @@
   "dateCreated": 1761768674648,
   "name": "MicroROS_edu",
   "meta": {
-    "logo": "",
+    "logo": "https://raw.githubusercontent.com/Abhi-creator1/microROS_remote_lab/main/Edrys_lab_logo.png",
     "description": "A remote robotics laboratory that enables hands-on learning of ROS 2, micro-ROS, robot modeling, motion planning, and real robot control through interaction with physical robotic hardware",
     "selfAssign": true,
     "defaultNumberOfRooms": "3"
