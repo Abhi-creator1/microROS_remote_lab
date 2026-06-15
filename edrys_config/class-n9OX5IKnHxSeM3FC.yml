@@ -11,7 +11,7 @@ meta:
     micro-ROS, robot modeling, motion planning, and real robot control through
     interaction with physical robotic hardware
   selfAssign: true
-  defaultNumberOfRooms: '3'
+  defaultNumberOfRooms: '4'
 members:
   teacher: []
   student:
@@ -26,8 +26,8 @@ modules:
       execute: ''
       script: ''
       enable:
-        student: false
-        teacher: false
+        student: true
+        teacher: true
     showInCustom: microros
     width: 800
     height: tall
@@ -103,163 +103,60 @@ modules:
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
       content: >
-        # MODULE 1
+        # Module 1A: Creating a micro-ROS Firmware for Teensy 4.1
 
 
-        ## micro-ROS Based Microcontroller Control
+        ## Learning Objectives
 
 
-        ### Module Focus
+        By the end of this module, you will be able to:
 
 
-        In this module, you will **run micro-ROS directly on a microcontroller**
-        and control basic hardware (LED) using ROS 2 communication.
+        * Understand the role of firmware in a micro-ROS system.
 
+        * Create a micro-ROS application for a Teensy 4.1 microcontroller.
 
-        This module is your **first contact with micro-ROS firmware**, not
-        Arduino-only sketches.
+        * Compile and upload a micro-ROS firmware using Arduino CLI.
 
-
-        ---
-
-
-        ## Before You Start
-
-
-        * ROS 2 and the micro-ROS Agent are already installed in the Docker
-        environment
-
-        * A helper script is provided to install the micro-ROS build system when
-        needed
-
-        * You will be working with **ESP32 or Teensy** (provided by the lab)
-
-        * You should be comfortable using:
-
-          * Terminal
-          * Basic C/C++ or Arduino-style code
-          * ROS 2 topics and nodes
-
-        📘 **Reference (optional, detailed):**
-
-
-        If you want deeper background or theory, refer to:
-
-
-        https://micro.ros.org/docs/tutorials/core/overview/
+        * Prepare a microcontroller to communicate with a micro-ROS Agent in
+        later modules.
 
 
         ---
 
 
-        ## Learning Outcomes
+        ## Background
 
 
-        By the end of this module, you should be able to:
+        A micro-ROS system consists of two main parts:
 
 
-        * Build and flash micro-ROS firmware on a microcontroller
+        1. **Microcontroller Firmware** – Runs on the embedded device and
+        contains the micro-ROS node.
 
-        * Run a micro-ROS node on ESP32 or Teensy
-
-        * Communicate with ROS 2 using topics
-
-        * Control a physical LED from ROS 2
+        2. **micro-ROS Agent** – Runs on a computer and bridges the
+        microcontroller to the ROS 2 ecosystem.
 
 
-        ---
-
-
-        ## System Architecture
-
-
-        ```text
-
-        ROS 2 (Docker)
-              |
-        micro-ROS Agent
-              |
-        ESP32 / Teensy (micro-ROS Node)
-              |
-        GPIO → LED
-
-        ```
+        In this module, you will focus only on creating and uploading firmware
+        to a Teensy 4.1 board. Communication with ROS 2 will be explored in
+        Module 1B.
 
 
         ---
 
 
-        ## Practical 1: micro-ROS Firmware Setup (ESP32 / Teensy)
+        ## Prerequisites
 
 
-        ### Objective
+        Before starting, ensure that:
 
 
-        Create and flash micro-ROS firmware for your microcontroller.
+        * The Docker environment is running.
 
+        * A Teensy 4.1 board is connected via USB.
 
-        ---
-
-
-        ### Step 1: Identify Your Board
-
-
-        Determine which board you are using:
-
-
-        * ESP32
-          or
-        * Teensy
-
-
-        You must know:
-
-
-        * Board model
-
-        * USB device name (e.g. `/dev/ttyUSB0` or `/dev/ttyACM0`)
-
-
-        ---
-
-
-        ### Step 2: Install the micro-ROS Build System (One-Time Setup)
-
-
-        The Docker environment provides a helper script that installs the
-        official micro-ROS build system.
-
-
-        Run:
-
-
-        ```bash
-
-        microros_install
-
-        ```
-
-
-        This script will:
-
-
-        * Create a workspace at:
-
-
-        ```text
-
-        ~/workspace/microros_ws
-
-        ```
-
-
-        * Download the `micro_ros_setup` package
-
-        * Install required dependencies
-
-        * Build the micro-ROS build system
-
-        * Configure the environment automatically
+        * Arduino CLI is available inside the container.
 
 
         Verify the installation:
@@ -267,351 +164,229 @@ modules:
 
         ```bash
 
-        source ~/workspace/microros_ws/install/local_setup.bash
+        arduino-cli core list
 
         ```
 
 
-        Check that the build system is available:
+        Expected output should include:
+
+
+        ```text
+
+        teensy:avr
+
+        ```
+
+
+        Verify the micro-ROS library:
 
 
         ```bash
 
-        ros2 run micro_ros_setup --help
+        arduino-cli lib list | grep micro
 
         ```
 
 
-        If the workspace becomes corrupted or you want to start again:
+        Expected output should include:
+
+
+        ```text
+
+        micro_ros_arduino
+
+        ```
+
+
+        ---
+
+
+        # Task 1 – Create a New Arduino Sketch
+
+
+        Create a working directory:
 
 
         ```bash
 
-        microros_clean
+        mkdir -p ~/workspace/microros_teensy
 
-        microros_install
+        cd ~/workspace/microros_teensy
+
+        touch microros_teensy.ino
 
         ```
 
 
-        ---
-
-
-        ### Step 3: Create micro-ROS Firmware Workspace
-
-
-        Create a firmware workspace using the micro-ROS build system.
-
-
-        Select the correct RTOS / platform:
-
-
-        * ESP32 → ESP-IDF
-
-        * Teensy → Arduino
-
-
-        Example for ESP32:
+        Open the file:
 
 
         ```bash
 
-        ros2 run micro_ros_setup create_firmware_ws.sh freertos esp32
+        nano microros_teensy.ino
 
         ```
 
 
-        Example for Teensy:
+        ---
+
+
+        # Task 2 – Implement a micro-ROS Publisher
+
+
+        Create a micro-ROS application that:
+
+
+        * Creates a ROS 2 node named:
+
+
+        ```text
+
+        sensor_node
+
+        ```
+
+
+        * Creates a publisher on the topic:
+
+
+        ```text
+
+        /sensor_status
+
+        ```
+
+
+        * Publishes an integer value periodically.
+
+        * Toggles the Teensy onboard LED whenever a message is published.
+
+
+        Use:
+
+
+        * `std_msgs/msg/Int32`
+
+        * `micro_ros_arduino`
+
+        * `rcl`
+
+        * `rclc`
+
+
+        libraries.
+
+
+        ---
+
+
+        # Task 3 – Compile the Firmware
+
+
+        Compile the sketch:
 
 
         ```bash
 
-        ros2 run micro_ros_setup create_firmware_ws.sh arduino teensy
+        arduino-cli compile \
+          --fqbn teensy:avr:teensy41 \
+          ~/workspace/microros_teensy
+        ```
+
+
+        A successful compilation should report memory usage and finish without
+        errors.
+
+
+        ---
+
+
+        # Task 4 – Upload the Firmware
+
+
+        Upload the firmware to the Teensy 4.1:
+
+
+        ```bash
+
+        arduino-cli upload \
+          -p /dev/ttyACM0 \
+          --fqbn teensy:avr:teensy41 \
+          ~/workspace/microros_teensy
+        ```
+
+
+        ---
+
+
+        # Task 5 – Verify Firmware Deployment
+
+
+        Press the reset button on the Teensy if required.
+
+
+        Observe the onboard LED.
+
+
+        Expected behavior:
+
+
+        * The LED blinks periodically.
+
+        * The microcontroller is running the uploaded firmware.
+
+
+        ---
+
+
+        # Reflection Questions
+
+
+        1. What is the role of firmware in a micro-ROS system?
+
+
+        2. Why must firmware be uploaded before running a micro-ROS Agent?
+
+
+        3. What is the purpose of the topic:
+
+
+        ```text
+
+        /sensor_status
 
         ```
 
 
-        ⚠️ **Important:**
+        4. What is the difference between compiling and uploading firmware?
 
 
-        Do not mix Arduino-only sketches with micro-ROS firmware.
-
-
-        This step creates a micro-ROS firmware workspace and downloads the
-        platform-specific toolchain required for your board.
+        5. Which component of the micro-ROS system runs on the microcontroller?
 
 
         ---
 
 
-        ### Step 4: Configure Firmware
+        # Completion Criteria
 
 
-        Configure the firmware for:
+        You have successfully completed this module if:
 
 
-        * Your board
+        * The sketch compiles successfully.
 
-        * Serial transport
+        * The firmware uploads successfully.
 
-        * Correct baud rate
+        * The Teensy 4.1 executes the uploaded program.
 
+        * The onboard LED indicates the firmware is running.
 
-        You should end this step with:
+        * The firmware contains a publisher for `/sensor_status`.
 
 
-        * A successful firmware build
-
-        * No unresolved dependencies
-
-
-        If you are stuck, consult the micro-ROS documentation linked above.
-
-
-        ---
-
-
-        ### Step 5: Flash the Firmware
-
-
-        Flash the generated firmware to:
-
-
-        * ESP32
-          or
-        * Teensy
-
-
-        Verify:
-
-
-        * Device is detected
-
-        * Flashing completes without errors
-
-
-        ---
-
-
-        ## Practical 2: Running the micro-ROS Agent
-
-
-        ### Objective
-
-
-        Enable communication between ROS 2 and your microcontroller.
-
-
-        ---
-
-
-        In a new terminal inside Docker:
-
-
-        * Start the micro-ROS Agent using serial transport
-
-        * Use the correct device name
-
-
-        Once running, the agent should:
-
-
-        * Stay active
-
-        * Show connection logs when the board connects
-
-
-        Do not proceed unless the agent is running correctly.
-
-
-        ---
-
-
-        ## Practical 3: LED Blink Using micro-ROS Node
-
-
-        ### Objective
-
-
-        Control an LED using a micro-ROS node running on the microcontroller.
-
-
-        ---
-
-
-        ### Task Description
-
-
-        You will implement a micro-ROS node that:
-
-
-        * Initializes a ROS 2 node on the microcontroller
-
-        * Uses a timer callback
-
-        * Toggles an LED at a fixed interval
-
-
-        ---
-
-
-        ### Requirements
-
-
-        Your implementation must:
-
-
-        * Use micro-ROS APIs
-
-        * Avoid blocking delays (`delay()`, infinite loops)
-
-        * Toggle a GPIO-connected LED
-
-        * Run continuously while the agent is active
-
-
-        ---
-
-
-        ### Expected Behavior
-
-
-        * LED blinks at a fixed frequency
-
-        * micro-ROS Agent shows an active connection
-
-        * Node appears in ROS 2 node list
-
-
-        ---
-
-
-        ## Practical 4: LED Control via ROS 2 Topic
-
-
-        ### Objective
-
-
-        Control the LED from the ROS 2 side.
-
-
-        ---
-
-
-        ### Task Description
-
-
-        Modify your firmware so that:
-
-
-        * The micro-ROS node subscribes to a ROS 2 topic
-
-        * Message type: `std_msgs/msg/Bool`
-
-        * LED turns:
-
-          * ON when message is `true`
-          * OFF when message is `false`
-
-        ---
-
-
-        ### ROS 2 Side Tasks
-
-
-        From another terminal:
-
-
-        * List active topics
-
-        * Publish messages to your LED control topic
-
-        * Observe LED response in real time
-
-
-        ---
-
-
-        ## Validation Checklist
-
-
-        Before moving on, confirm:
-
-
-        * [ ] micro-ROS Agent is running
-
-        * [ ] Board connects successfully
-
-        * [ ] micro-ROS node appears in ROS 2
-
-        * [ ] LED blinks using timer
-
-        * [ ] LED responds to ROS 2 topic messages
-
-
-        ---
-
-
-        ## Deliverables
-
-
-        Submit:
-
-
-        1. Firmware source code
-
-
-        2. Screenshot or log of:
-
-           * micro-ROS Agent running
-           * ROS 2 topic interaction
-
-        3. Short explanation (max 150 words):
-
-           * Board used
-           * Topic name
-           * GPIO pin used
-           * Any issues faced
-
-        ---
-
-
-        ## Common Issues & Hints
-
-
-        * If the node does not appear → Agent is not connected
-
-        * If flashing fails → Check board permissions
-
-        * If the micro-ROS build system is unavailable → Run `microros_install`
-
-        * If LED does not blink → Verify GPIO pin mapping
-
-        * If messages lag → Reduce executor workload
-
-
-        ---
-
-
-        ## What You Should Understand After This Module
-
-
-        * micro-ROS ≠ Arduino Serial
-
-        * Microcontrollers can be real ROS 2 nodes
-
-        * ROS 2 can directly control hardware
-
-        * Firmware design matters more than code size
-
-
-        ---
-
-
-        ### End of Module 1
-
-
-        **Proceed to Module 2 only after successful validation**
+        In Module 1B, you will connect this firmware to a micro-ROS Agent and
+        observe the published data from ROS 2.
     studentConfig:
       content: ''
     teacherConfig:
@@ -623,92 +398,22 @@ modules:
     height: huge
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
-      content: >-
-        # MODULE 1 – SOLVED REFERENCE
+      content: >
+        # Module 1A Reference Solution
 
 
-        ## micro-ROS Based Microcontroller Control
-
-
-        ⚠️ **This is a reference solution.**
-
-        Students are expected to attempt the module **before** consulting this.
-
-
-        ---
-
-
-        ## Assumptions
-
-
-        * ROS 2 + micro-ROS Agent are already installed in Docker
-
-        * Board used: **ESP32 Dev Module**
-          (Teensy notes included at the end)
-        * Serial device: `/dev/ttyUSB0`
-
-        * LED connected to **GPIO 2** (onboard LED for most ESP32)
-
-
-        ---
-
-
-        ## 1. Create micro-ROS Firmware Workspace (ESP32)
-
-
-        Inside the ROS 2 Docker container:
+        ## Step 1 – Create Project Directory
 
 
         ```bash
 
-        source /opt/ros/humble/setup.bash
+        mkdir -p ~/workspace/microros_teensy
 
-        ```
+        cd ~/workspace/microros_teensy
 
+        touch microros_teensy.ino
 
-        Create firmware workspace:
-
-
-        ```bash
-
-        mkdir -p ~/microros_firmware
-
-        cd ~/microros_firmware
-
-        ```
-
-
-        Clone micro-ROS build system:
-
-
-        ```bash
-
-        git clone https://github.com/micro-ROS/micro_ros_setup.git
-        src/micro_ros_setup
-
-        ```
-
-
-        Install dependencies:
-
-
-        ```bash
-
-        rosdep update
-
-        rosdep install --from-paths src --ignore-src -y
-
-        ```
-
-
-        Build micro-ROS tools:
-
-
-        ```bash
-
-        colcon build
-
-        source install/local_setup.bash
+        nano microros_teensy.ino
 
         ```
 
@@ -716,71 +421,16 @@ modules:
         ---
 
 
-        ## 2. Create ESP32 Firmware
+        ## Step 2 – Implement the Firmware
 
 
-        Create firmware workspace for ESP32:
+        Paste the following code into `microros_teensy.ino`.
 
 
-        ```bash
+        ```cpp
 
-        ros2 run micro_ros_setup create_firmware_ws.sh freertos esp32
+        #include <micro_ros_arduino.h>
 
-        ```
-
-
-        Configure firmware:
-
-
-        ```bash
-
-        ros2 run micro_ros_setup configure_firmware.sh serial
-
-        ```
-
-
-        > When prompted:
-
-
-        * Select correct ESP32 board
-
-        * Select default UART
-
-        * Keep default baud rate unless instructed otherwise
-
-
-        ---
-
-
-        ## 3. Add LED Blink micro-ROS App
-
-
-        Navigate to apps directory:
-
-
-        ```bash
-
-        cd firmware/freertos_apps/apps
-
-        ```
-
-
-        Create a new app:
-
-
-        ```bash
-
-        mkdir led_blink
-
-        cd led_blink
-
-        ```
-
-
-        Create `app.c`:
-
-
-        ```c
 
         #include <rcl/rcl.h>
 
@@ -788,254 +438,103 @@ modules:
 
         #include <rclc/executor.h>
 
-        #include <std_msgs/msg/bool.h>
+
+        #include <std_msgs/msg/int32.h>
 
 
-        #include "freertos/FreeRTOS.h"
-
-        #include "freertos/task.h"
-
-        #include "driver/gpio.h"
-
-
-        #define LED_PIN GPIO_NUM_2
-
+        rcl_publisher_t publisher;
 
         rcl_timer_t timer;
 
         rclc_executor_t executor;
 
-        rcl_node_t node;
+        rclc_support_t support;
 
         rcl_allocator_t allocator;
 
-        rclc_support_t support;
+        rcl_node_t node;
 
 
-        bool led_state = false;
+        std_msgs__msg__Int32 sensor_msg;
+
+
+        const int LED_PIN = 13;
 
 
         void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 
         {
-            (void) last_call_time;
-            if (timer != NULL) {
-                led_state = !led_state;
-                gpio_set_level(LED_PIN, led_state);
-            }
+          (void) last_call_time;
+
+          if (timer != NULL)
+          {
+            sensor_msg.data++;
+
+            digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+
+            rcl_publish(&publisher, &sensor_msg, NULL);
+          }
         }
 
 
-        void appMain(void * arg)
+        void setup()
 
         {
-            allocator = rcl_get_default_allocator();
+          pinMode(LED_PIN, OUTPUT);
 
-            rclc_support_init(&support, 0, NULL, &allocator);
-            rclc_node_init_default(&node, "esp32_led_node", "", &support);
+          set_microros_transports();
 
-            rclc_timer_init_default(
-                &timer,
-                &support,
-                RCL_MS_TO_NS(500),
-                timer_callback
-            );
+          delay(2000);
 
-            rclc_executor_init(&executor, &support.context, 1, &allocator);
-            rclc_executor_add_timer(&executor, &timer);
+          allocator = rcl_get_default_allocator();
 
-            gpio_reset_pin(LED_PIN);
-            gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
+          rclc_support_init(
+            &support,
+            0,
+            NULL,
+            &allocator);
 
-            while (1) {
-                rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100));
-                vTaskDelay(10 / portTICK_PERIOD_MS);
-            }
-        }
-
-        ```
-
-
-        Register app:
-
-
-        ```bash
-
-        cd ..
-
-        nano CMakeLists.txt
-
-        ```
-
-
-        Add:
-
-
-        ```cmake
-
-        add_subdirectory(led_blink)
-
-        ```
-
-
-        ---
-
-
-        ## 4. Build and Flash Firmware
-
-
-        Return to firmware root:
-
-
-        ```bash
-
-        cd ~/microros_firmware
-
-        ```
-
-
-        Build firmware:
-
-
-        ```bash
-
-        ros2 run micro_ros_setup build_firmware.sh
-
-        ```
-
-
-        Flash to ESP32:
-
-
-        ```bash
-
-        ros2 run micro_ros_setup flash_firmware.sh
-
-        ```
-
-
-        ---
-
-
-        ## 5. Run micro-ROS Agent
-
-
-        Open a **new terminal**:
-
-
-        ```bash
-
-        source /opt/ros/humble/setup.bash
-
-        ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0
-
-        ```
-
-
-        Expected output:
-
-
-        ```
-
-        [INFO] Connected to serial device
-
-        [INFO] Session established
-
-        ```
-
-
-        ---
-
-
-        ## 6. Verify micro-ROS Node
-
-
-        Open another terminal:
-
-
-        ```bash
-
-        source /opt/ros/humble/setup.bash
-
-        ros2 node list
-
-        ```
-
-
-        Expected:
-
-
-        ```
-
-        /esp32_led_node
-
-        ```
-
-
-        LED should now **blink every 500 ms**.
-
-
-        ---
-
-
-        ## 7. LED Control via ROS 2 Topic (Solved)
-
-
-        ### Modify Firmware
-
-
-        Add subscriber:
-
-
-        ```c
-
-        std_msgs__msg__Bool led_msg;
-
-        rcl_subscription_t subscriber;
-
-
-        void led_callback(const void * msgin)
-
-        {
-            const std_msgs__msg__Bool * msg = (const std_msgs__msg__Bool *)msgin;
-            gpio_set_level(LED_PIN, msg->data);
-        }
-
-        ```
-
-
-        Initialize subscriber inside `appMain()`:
-
-
-        ```c
-
-        rclc_subscription_init_default(
-            &subscriber,
+          rclc_node_init_default(
             &node,
-            ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
-            "led_control"
-        );
+            "sensor_node",
+            "",
+            &support);
 
+          rclc_publisher_init_default(
+            &publisher,
+            &node,
+            ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+            "/sensor_status");
 
-        rclc_executor_add_subscription(
+          rclc_timer_init_default(
+            &timer,
+            &support,
+            RCL_MS_TO_NS(1000),
+            timer_callback);
+
+          rclc_executor_init(
             &executor,
-            &subscriber,
-            &led_msg,
-            &led_callback,
-            ON_NEW_DATA
-        );
+            &support.context,
+            1,
+            &allocator);
 
-        ```
+          rclc_executor_add_timer(
+            &executor,
+            &timer);
+
+          sensor_msg.data = 0;
+        }
 
 
-        Rebuild & flash again:
+        void loop()
 
+        {
+          rclc_executor_spin_some(
+            &executor,
+            RCL_MS_TO_NS(100));
 
-        ```bash
-
-        ros2 run micro_ros_setup build_firmware.sh
-
-        ros2 run micro_ros_setup flash_firmware.sh
+          delay(100);
+        }
 
         ```
 
@@ -1043,73 +542,166 @@ modules:
         ---
 
 
-        ## 8. Control LED from ROS 2
-
-
-        Publish ON:
+        ## Step 3 – Compile the Firmware
 
 
         ```bash
 
-        ros2 topic pub /led_control std_msgs/msg/Bool "{data: true}"
+        arduino-cli compile \
+          --fqbn teensy:avr:teensy41 \
+          ~/workspace/microros_teensy
+        ```
+
+
+        Expected result:
+
+
+        ```text
+
+        Memory Usage on Teensy 4.1:
+
+        FLASH: ...
+
+        RAM1: ...
+
+        RAM2: ...
 
         ```
 
 
-        Publish OFF:
-
-
-        ```bash
-
-        ros2 topic pub /led_control std_msgs/msg/Bool "{data: false}"
-
-        ```
-
-
-        LED should respond immediately.
+        No compilation errors should be reported.
 
 
         ---
 
 
-        ## 9. Validation (Solved)
+        ## Step 4 – Upload the Firmware
 
 
-        ✔ micro-ROS Agent running
-
-        ✔ ESP32 connected
-
-        ✔ Node visible in ROS 2
-
-        ✔ LED blinks (timer)
-
-        ✔ LED controlled via ROS 2 topic
-
-
-        ---
-
-
-        ## Teensy Notes (Alternative Board)
-
-
-        For **Teensy**:
+        Identify the Teensy device:
 
 
         ```bash
 
-        ros2 run micro_ros_setup create_firmware_ws.sh arduino teensy
+        ls /dev/ttyACM*
 
         ```
 
 
-        * Use Arduino framework
+        Typical output:
 
-        * GPIO pin depends on Teensy model
 
-        * Flashing is done via Teensy Loader
+        ```text
+
+        /dev/ttyACM0
+
+        ```
+
+
+        Upload:
+
+
+        ```bash
+
+        arduino-cli upload \
+          -p /dev/ttyACM0 \
+          --fqbn teensy:avr:teensy41 \
+          ~/workspace/microros_teensy
+        ```
 
 
         ---
+
+
+        ## Step 5 – Verify Firmware Execution
+
+
+        After upload:
+
+
+        * The Teensy resets automatically.
+
+        * The onboard LED (Pin 13) toggles every second.
+
+        * The firmware continuously increments and publishes a counter on:
+
+
+        ```text
+
+        /sensor_status
+
+        ```
+
+
+        ---
+
+
+        ## What This Firmware Does
+
+
+        ### Node
+
+
+        ```text
+
+        sensor_node
+
+        ```
+
+
+        ### Topic
+
+
+        ```text
+
+        /sensor_status
+
+        ```
+
+
+        ### Message Type
+
+
+        ```text
+
+        std_msgs/msg/Int32
+
+        ```
+
+
+        ### Publish Rate
+
+
+        ```text
+
+        1 Hz
+
+        ```
+
+
+        ### LED Behaviour
+
+
+        The onboard LED toggles every time a message is published.
+
+
+        ---
+
+
+        ## Expected Result
+
+
+        At the end of this module:
+
+
+        * Teensy 4.1 contains a valid micro-ROS firmware.
+
+        * A micro-ROS node is running on the microcontroller.
+
+        * The firmware publishes data on `/sensor_status`.
+
+        * The firmware is ready to communicate with a micro-ROS Agent in Module
+        1B.
     studentConfig:
       content: ''
     teacherConfig:
@@ -1560,7 +1152,7 @@ modules:
       content: ''
     stationConfig:
       content: ''
-    showInCustom: Room 2
+    showInCustom: Room 3
     width: 900
     height: huge
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
@@ -2059,7 +1651,7 @@ modules:
       content: ''
     stationConfig:
       content: ''
-    showInCustom: Room 2
+    showInCustom: Room 3
     width: 900
     height: huge
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
@@ -2667,88 +2259,132 @@ modules:
       content: ''
     stationConfig:
       content: ''
-    showInCustom: Room 3
+    showInCustom: Room 4
     width: 2000
     height: huge
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
-      content: >-
+      content: >
         # Remote Robotics Laboratory
 
 
-        Welcome to the micro-ROS Education Platform.
+        Welcome to the **micro-ROS Robotics Laboratory**.
 
 
-        This remote laboratory provides hands-on experience with **ROS 2**,
-        **micro-ROS**, **RViz**, **MoveIt**, and a real **4-DOF ASRS robotic
-        arm**. Through Edrys Lite, you will interact with both simulation and
-        physical hardware using a web browser.
+        This remote laboratory provides hands-on experience with ROS 2,
+        micro-ROS, real-time embedded systems, robot visualization, and motion
+        control. Through Edrys Lite, you will interact with both software tools
+        and physical hardware using only a web browser.
 
 
-        ## Course Modules
+        The laboratory combines microcontroller programming, ROS 2
+        communication, robot visualization, and control of a real 4-DOF robotic
+        arm, providing a complete robotics workflow from embedded devices to
+        robotic applications.
 
 
-        ### Module 1 – micro-ROS Based Microcontroller Control
+        ---
 
 
-        Learn how ROS 2 communicates with microcontrollers using micro-ROS and
-        control basic hardware.
+        # Course Modules
 
 
-        ### Module 2 – RViz Visualization and GUI-Based Robot Control
+        ## Module 1A – Creating a micro-ROS Firmware
 
 
-        Learn robot modeling, visualization, and motion planning using URDF,
-        RViz, and MoveIt.
+        Learn how to create, compile, and upload a micro-ROS firmware to a
+        Teensy 4.1 microcontroller. This module introduces embedded ROS 2
+        applications and prepares the microcontroller for communication with ROS
+        2.
 
 
-        ### Module 3 – Motion Control of ASRS Robot
+        ## Module 1B – Connecting micro-ROS to ROS 2
 
 
-        Execute trajectories and control a real robotic arm using the complete
-        ROS 2 and micro-ROS stack.
+        Learn how a micro-ROS Agent bridges a microcontroller and ROS 2.
+        Discover topics, nodes, and message exchange between the Teensy and the
+        ROS 2 ecosystem.
 
 
-        ## Available Resources
+        ## Module 2 – RViz Visualization and Robot Modeling
+
+
+        Learn robot visualization and robot description concepts using URDF and
+        RViz. Explore robot models, coordinate frames, and interactive
+        visualization tools used in modern robotics.
+
+
+        ## Module 3 – Motion Control of a 4-DOF Robotic Arm
+
+
+        Control a real robotic arm using ROS 2 and micro-ROS. Execute robot
+        motions, monitor system behavior, and observe how embedded devices and
+        ROS 2 work together in a complete robotic system.
+
+
+        ---
+
+
+        # Available Resources
 
 
         * ROS 2 Humble
 
         * micro-ROS
 
-        * RViz
+        * Arduino CLI
 
-        * MoveIt
+        * Teensy 4.1 Microcontroller
+
+        * RViz
 
         * Camera Stream
 
-        * Remote Terminal Access
+        * Remote Linux Terminal
 
         * Real Robot Hardware
 
 
-        ## Before You Begin
+        ---
 
 
-        * Complete the modules in order.
-
-        * Follow the instructions provided in each module.
-
-        * Use the camera feed to observe robot behavior.
-
-        * Contact the instructor if you need assistance.
+        # Before You Begin
 
 
-        Enjoy exploring modern robotics through real-world experimentation.
+        * Complete the modules in the order provided.
+
+        * Read all instructions carefully before starting a task.
+
+        * Use the camera stream to observe hardware behavior.
+
+        * Verify each module's completion criteria before moving to the next
+        module.
+
+        * Contact the instructor if assistance is required.
 
 
-        ## About This Platform
+        ---
 
 
-        This remote robotics laboratory was created as an educational initiative
-        at Hochschule Schmalkalden to provide hands-on learning experiences in
-        ROS 2, micro-ROS, robot motion planning, and real-world robotic systems
-        through remote access technologies.
+        # Learning Path
+
+
+        ```text
+
+        Module 1A
+            ↓
+        Module 1B
+            ↓
+        Module 2
+            ↓
+        Module 3
+
+        ```
+
+
+        Students first create a micro-ROS firmware, then connect it to ROS 2,
+        explore robot visualization tools, and finally control a real robotic
+        arm through the complete ROS 2 and micro-ROS software stack.
     studentConfig:
       content: ''
     teacherConfig:
@@ -2758,6 +2394,738 @@ modules:
     showInCustom: lobby
     width: full
     height: tall
+  - url: https://edrys-labs.github.io/module-markdown-it/index.html
+    config:
+      content: ''
+    studentConfig:
+      content: ''
+    teacherConfig:
+      content: >-
+        # Teacher Notes
+
+
+        ⚠️ After opening the PXTerminal module on the station, navigate to the
+        workspace directory before starting any lab activities:
+
+
+        ```bash
+
+        cd ~ && cd workspace
+    stationConfig:
+      content: ''
+    showInCustom: teacher-only, station_ros, microros, lobby
+    width: third
+    height: medium
+  - url: https://edrys-labs.github.io/module-markdown-it/index.html
+    config:
+      content: >
+        # Module 1B: Connecting micro-ROS Firmware to ROS 2
+
+
+        ## Learning Objectives
+
+
+        By the end of this module, you will be able to:
+
+
+        * Understand the role of the micro-ROS Agent.
+
+        * Connect a microcontroller running micro-ROS firmware to ROS 2.
+
+        * Discover micro-ROS nodes and topics.
+
+        * Inspect ROS 2 topic information.
+
+        * Monitor data published from a microcontroller.
+
+
+        ---
+
+
+        ## Background
+
+
+        In Module 1A, you created and uploaded a micro-ROS firmware to a Teensy
+        4.1.
+
+
+        The firmware contains a micro-ROS node that publishes data on the topic:
+
+
+        ```text
+
+        /sensor_status
+
+        ```
+
+
+        However, the microcontroller cannot communicate directly with the ROS 2
+        network.
+
+
+        A **micro-ROS Agent** acts as a bridge between the microcontroller and
+        ROS 2. Once the Agent is running, the microcontroller becomes visible
+        within the ROS 2 ecosystem.
+
+
+        ---
+
+
+        ## Prerequisites
+
+
+        Before starting:
+
+
+        * Complete Module 1A.
+
+        * Ensure the Teensy 4.1 is connected via USB.
+
+        * Ensure the Module 1A firmware is running on the Teensy.
+
+
+        Verify the device is available:
+
+
+        ```bash
+
+        ls /dev/ttyACM*
+
+        ```
+
+
+        Expected output:
+
+
+        ```text
+
+        /dev/ttyACM0
+
+        ```
+
+
+        ---
+
+
+        # Task 1 – Start the micro-ROS Agent
+
+
+        Open a terminal and start the Agent:
+
+
+        ```bash
+
+        ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyACM0
+
+        ```
+
+
+        The Agent should start successfully and establish communication with the
+        Teensy.
+
+
+        Keep this terminal running.
+
+
+        ---
+
+
+        # Task 2 – Discover Available ROS 2 Topics
+
+
+        Open a second terminal.
+
+
+        List all available topics:
+
+
+        ```bash
+
+        ros2 topic list
+
+        ```
+
+
+        Expected output should include:
+
+
+        ```text
+
+        /sensor_status
+
+        /rosout
+
+        ```
+
+
+        ---
+
+
+        # Task 3 – Inspect Topic Information
+
+
+        Display information about the topic:
+
+
+        ```bash
+
+        ros2 topic info /sensor_status
+
+        ```
+
+
+        Observe:
+
+
+        * Topic name
+
+        * Message type
+
+        * Number of publishers
+
+        * Number of subscribers
+
+
+        ---
+
+
+        # Task 4 – Determine the Message Type
+
+
+        Check the message type used by the topic:
+
+
+        ```bash
+
+        ros2 topic type /sensor_status
+
+        ```
+
+
+        Expected output:
+
+
+        ```text
+
+        std_msgs/msg/Int32
+
+        ```
+
+
+        ---
+
+
+        # Task 5 – Monitor Published Data
+
+
+        Display the data being published by the Teensy:
+
+
+        ```bash
+
+        ros2 topic echo /sensor_status
+
+        ```
+
+
+        Expected output:
+
+
+        ```text
+
+        data: 1
+
+
+        data: 2
+
+
+        data: 3
+
+
+        data: 4
+
+        ```
+
+
+        The values should continue increasing while the firmware is running.
+
+
+        ---
+
+
+        # Task 6 – Discover the micro-ROS Node
+
+
+        List all active ROS 2 nodes:
+
+
+        ```bash
+
+        ros2 node list
+
+        ```
+
+
+        Expected output should include:
+
+
+        ```text
+
+        /sensor_node
+
+        ```
+
+
+        This confirms that the node running on the Teensy is visible within the
+        ROS 2 graph.
+
+
+        ---
+
+
+        # Reflection Questions
+
+
+        1. What is the purpose of the micro-ROS Agent?
+
+
+        2. Why is the Agent required for communication with ROS 2?
+
+
+        3. Which component runs on the Teensy 4.1?
+
+
+        4. Which component runs inside the Docker container?
+
+
+        5. What information can be obtained using:
+
+
+        ```bash
+
+        ros2 topic info /sensor_status
+
+        ```
+
+
+        6. What information can be obtained using:
+
+
+        ```bash
+
+        ros2 node list
+
+        ```
+
+
+        ---
+
+
+        # Completion Criteria
+
+
+        You have successfully completed this module if:
+
+
+        * The micro-ROS Agent starts successfully.
+
+        * The Teensy connects to the Agent.
+
+        * The topic `/sensor_status` appears in the ROS 2 graph.
+
+        * The node `/sensor_node` appears in the ROS 2 graph.
+
+        * Messages can be monitored using:
+
+
+        ```bash
+
+        ros2 topic echo /sensor_status
+
+        ```
+
+
+        * The published values increase continuously.
+
+
+        ---
+
+
+        ## Summary
+
+
+        In this module, you connected a microcontroller running micro-ROS
+        firmware to a ROS 2 system using the micro-ROS Agent. You discovered
+        topics and nodes, inspected message types, and monitored live data
+        published from the Teensy 4.1.
+
+
+        The micro-ROS communication workflow established in this module will be
+        used throughout the remaining laboratory exercises.
+    studentConfig:
+      content: ''
+    teacherConfig:
+      content: ''
+    stationConfig:
+      content: ''
+    showInCustom: Room 2
+    width: 900
+    height: huge
+  - url: https://edrys-labs.github.io/module-markdown-it/index.html
+    config:
+      content: >
+        # Module 1B Reference Solution
+
+
+        ## Step 1 – Verify the Teensy Connection
+
+
+        Confirm that the Teensy 4.1 is connected and detected by Linux:
+
+
+        ```bash
+
+        ls /dev/ttyACM*
+
+        ```
+
+
+        Expected output:
+
+
+        ```text
+
+        /dev/ttyACM0
+
+        ```
+
+
+        If multiple devices are connected, identify the Teensy device before
+        continuing.
+
+
+        ---
+
+
+        ## Step 2 – Start the micro-ROS Agent
+
+
+        Open a terminal and launch the Agent:
+
+
+        ```bash
+
+        ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyACM0
+
+        ```
+
+
+        Expected output (similar to):
+
+
+        ```text
+
+        [INFO] Serial port: /dev/ttyACM0
+
+        [INFO] Running micro-ROS Agent
+
+        [INFO] create_client
+
+        [INFO] create_participant
+
+        [INFO] create_topic
+
+        [INFO] create_publisher
+
+        ```
+
+
+        Leave this terminal running.
+
+
+        ---
+
+
+        ## Step 3 – Verify Topic Discovery
+
+
+        Open a second terminal.
+
+
+        List all available ROS 2 topics:
+
+
+        ```bash
+
+        ros2 topic list
+
+        ```
+
+
+        Expected output includes:
+
+
+        ```text
+
+        /sensor_status
+
+        /rosout
+
+        ```
+
+
+        ---
+
+
+        ## Step 4 – Inspect Topic Information
+
+
+        Display detailed information about the topic:
+
+
+        ```bash
+
+        ros2 topic info /sensor_status
+
+        ```
+
+
+        Expected output:
+
+
+        ```text
+
+        Type: std_msgs/msg/Int32
+
+        Publisher count: 1
+
+        Subscription count: 0
+
+        ```
+
+
+        ---
+
+
+        ## Step 5 – Verify Message Type
+
+
+        Check the topic message type:
+
+
+        ```bash
+
+        ros2 topic type /sensor_status
+
+        ```
+
+
+        Expected output:
+
+
+        ```text
+
+        std_msgs/msg/Int32
+
+        ```
+
+
+        ---
+
+
+        ## Step 6 – Monitor Published Data
+
+
+        Display the data being published from the Teensy:
+
+
+        ```bash
+
+        ros2 topic echo /sensor_status
+
+        ```
+
+
+        Expected output:
+
+
+        ```text
+
+        data: 0
+
+
+        data: 1
+
+
+        data: 2
+
+
+        data: 3
+
+
+        data: 4
+
+        ```
+
+
+        Values continue increasing while the firmware is running.
+
+
+        Press:
+
+
+        ```text
+
+        CTRL+C
+
+        ```
+
+
+        to stop monitoring.
+
+
+        ---
+
+
+        ## Step 7 – Discover the micro-ROS Node
+
+
+        List all active ROS 2 nodes:
+
+
+        ```bash
+
+        ros2 node list
+
+        ```
+
+
+        Expected output:
+
+
+        ```text
+
+        / sensor_node
+
+        ```
+
+
+        Depending on the ROS 2 environment, additional nodes may also appear.
+
+
+        ---
+
+
+        ## Step 8 – Inspect the Node
+
+
+        Display information about the node:
+
+
+        ```bash
+
+        ros2 node info /sensor_node
+
+        ```
+
+
+        Expected output contains:
+
+
+        ```text
+
+        Publishers:
+
+          /sensor_status
+            std_msgs/msg/Int32
+        ```
+
+
+        This confirms that the Teensy node is publishing data into the ROS 2
+        network.
+
+
+        ---
+
+
+        ## Verification Checklist
+
+
+        Successful completion is confirmed when:
+
+
+        * [ ] Teensy is detected as `/dev/ttyACM0`
+
+        * [ ] micro-ROS Agent starts successfully
+
+        * [ ] `/sensor_status` appears in `ros2 topic list`
+
+        * [ ] Topic type is `std_msgs/msg/Int32`
+
+        * [ ] Data is visible using `ros2 topic echo /sensor_status`
+
+        * [ ] `/sensor_node` appears in `ros2 node list`
+
+        * [ ] Node information shows a publisher for `/sensor_status`
+
+
+        ---
+
+
+        ## Expected Architecture After Completion
+
+
+        ```text
+
+        +--------------------+
+
+        |     Teensy 4.1     |
+
+        |--------------------|
+
+        |  sensor_node       |
+
+        |  /sensor_status    |
+
+        +---------+----------+
+                  |
+                  | Serial USB
+                  |
+        +---------v----------+
+
+        |  micro-ROS Agent   |
+
+        +---------+----------+
+                  |
+                  |
+        +---------v----------+
+
+        |      ROS 2         |
+
+        |--------------------|
+
+        | ros2 topic list    |
+
+        | ros2 topic echo    |
+
+        | ros2 node list     |
+
+        +--------------------+
+
+        ```
+
+
+        At this stage, the Teensy microcontroller is successfully integrated
+        into the ROS 2 ecosystem through the micro-ROS Agent.
+    studentConfig:
+      content: ''
+    teacherConfig:
+      content: ''
+    stationConfig:
+      content: ''
+    showInCustom: Room 2
+    width: 900
+    height: huge
 setupSigner: >-
   BL8CNNOkAJGNpdR/k6eBTJKUkBda/ux9qlDO1J+XmO2LY+1go6tBvf+Fw8TjQL9BXkWndvADxRX1iEDmmQp1VZQ=
 setupSignature: >-

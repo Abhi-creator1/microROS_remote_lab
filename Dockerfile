@@ -67,6 +67,45 @@ RUN curl -fsSL https://github.com/arduino/arduino-cli/releases/download/v1.3.1/a
  && rm /tmp/arduino-cli.tar.gz
 
 
+# Configure Arduino CLI
+RUN arduino-cli config init
+
+# Add Teensy board manager
+RUN arduino-cli config add board_manager.additional_urls \
+    https://www.pjrc.com/teensy/package_teensy_index.json
+
+# Install Teensy support
+RUN arduino-cli core update-index \
+ && arduino-cli core install teensy:avr
+
+# Install micro-ROS Arduino library (ROS 2 Humble)
+# Install unzip (needed for GitHub release package)
+RUN apt-get update && apt-get install -y unzip
+
+# Install micro-ROS Arduino library (ROS 2 Humble)
+RUN mkdir -p /root/Arduino/libraries \
+ && rm -rf /root/Arduino/libraries/micro_ros_arduino \
+ && cd /tmp \
+ && wget -O micro_ros_arduino_v2.0.8-humble.zip \
+    https://github.com/micro-ROS/micro_ros_arduino/archive/refs/tags/v2.0.8-humble.zip \
+ && unzip micro_ros_arduino_v2.0.8-humble.zip \
+ && mv micro_ros_arduino-2.0.8-humble /root/Arduino/libraries/micro_ros_arduino \
+ && rm -f micro_ros_arduino_v2.0.8-humble.zip
+
+# Patch Teensy platform for micro-ROS precompiled libraries
+RUN cp \
+    /root/Arduino/libraries/micro_ros_arduino/extras/patching_boards/platform_teensy.txt \
+    /root/.arduino15/packages/teensy/hardware/avr/1.61.0/platform.txt
+    
+# Make Arduino packages available to appuser
+RUN mkdir -p /home/appuser/.arduino15 \
+ && mkdir -p /home/appuser/Arduino \
+ && cp -r /root/.arduino15/packages /home/appuser/.arduino15/ \
+ && cp -r /root/Arduino/libraries /home/appuser/Arduino/ \
+ && chown -R appuser:appuser /home/appuser/.arduino15 \
+ && chown -R appuser:appuser /home/appuser/Arduino
+
+
  # Install nano editor
 RUN apt-get update && apt-get install -y nano
 
