@@ -18,11 +18,7 @@ services:
     volumes:
       - ./workspace:/home/appuser/workspace
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-
-    devices:
-      - "/dev/ttyACM0:/dev/ttyACM0"
-      - "/dev/video0:/dev/video0"      # Webcam
-      - "usb2/2-2"
+      - /dev:/dev
     group_add:
       - dialout
       - video     # For Webcam

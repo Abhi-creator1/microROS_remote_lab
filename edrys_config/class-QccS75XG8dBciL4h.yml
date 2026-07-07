@@ -1,6 +1,6 @@
-id: n9OX5IKnHxSeM3FC
+id: QccS75XG8dBciL4h
 createdBy: >-
-  BL8CNNOkAJGNpdR/k6eBTJKUkBda/ux9qlDO1J+XmO2LY+1go6tBvf+Fw8TjQL9BXkWndvADxRX1iEDmmQp1VZQ=
+  BGCmeuYMzuGrDVyWJemeIVNm7yGf6Gd2Gd+nvWG4Eq/IFihBDy4BNgivFkDY7tsqRfOsV5H60/iDJ6eWW92lgNw=
 dateCreated: 1761768674648
 name: MicroROS_edu
 meta:
@@ -31,6 +31,7 @@ modules:
     showInCustom: microros
     width: 800
     height: tall
+    id: 435540e2-bae5-44ac-b2e8-5e6b49ae7adc
   - url: https://edrys-labs.github.io/module-station-stream/index.html
     config: ''
     studentConfig: ''
@@ -44,6 +45,7 @@ modules:
     showInCustom: microros
     width: half
     height: medium
+    id: 854bb72f-9e04-42f7-8707-6c9526be1213
   - url: https://abhi-creator1.github.io/module-xpra-gui/index.html
     config: ''
     studentConfig: ''
@@ -52,6 +54,7 @@ modules:
     showInCustom: Station ros
     width: 800
     height: tall
+    id: e8f8e66b-170b-42ba-a6a3-317d0d0555b5
   - url: https://edrys-labs.github.io/module-pyxtermjs/index.html
     config: ''
     studentConfig: ''
@@ -66,6 +69,7 @@ modules:
     showInCustom: Station ros
     width: full
     height: tall
+    id: 3027ba80-d403-495a-ba87-6f05808a022e
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
       content: >-
@@ -100,6 +104,7 @@ modules:
     showInCustom: Station ros
     width: half
     height: medium
+    id: 8b72158e-393f-4949-a553-1fc3ba775c3b
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
       content: >
@@ -396,6 +401,7 @@ modules:
     showInCustom: Room 1
     width: 900
     height: huge
+    id: c977ebc8-bcc9-456d-8c4f-ec61f1390b89
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
       content: >
@@ -546,10 +552,7 @@ modules:
 
 
         ```bash
-
-        arduino-cli compile \
-          --fqbn teensy:avr:teensy41 \
-          ~/workspace/microros_teensy
+          arduino-cli compile --fqbn teensy:avr:teensy41 --output-dir ~/workspace/microros_teensy/build ~/workspace/microros_teensy
         ```
 
 
@@ -602,11 +605,7 @@ modules:
 
 
         ```bash
-
-        arduino-cli upload \
-          -p /dev/ttyACM0 \
-          --fqbn teensy:avr:teensy41 \
-          ~/workspace/microros_teensy
+          sudo teensy_loader_cli --mcu=TEENSY41 -v -w ~/workspace/microros_teensy/build/microros_teensy.ino.hex
         ```
 
 
@@ -711,6 +710,7 @@ modules:
     showInCustom: Room 1
     width: 900
     height: huge
+    id: c715b927-48d2-4d6d-b7bf-e2014e15e408
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
       content: >
@@ -1155,6 +1155,7 @@ modules:
     showInCustom: Room 3
     width: 900
     height: huge
+    id: e1a326a1-9fa4-45fa-ba9a-b164088e56ae
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
       content: >-
@@ -1654,6 +1655,7 @@ modules:
     showInCustom: Room 3
     width: 900
     height: huge
+    id: 2174cf11-f19f-4541-a882-05f280f01695
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
       content: >
@@ -2262,6 +2264,7 @@ modules:
     showInCustom: Room 4
     width: 2000
     height: huge
+    id: 02a8291b-83c2-48ad-b264-521a03d5b9e0
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
       content: >
@@ -2394,6 +2397,7 @@ modules:
     showInCustom: lobby
     width: full
     height: tall
+    id: 0e35176b-9b00-4bb7-8a38-22ffd9dc020e
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
       content: ''
@@ -2416,6 +2420,7 @@ modules:
     showInCustom: teacher-only, station_ros, microros, lobby
     width: third
     height: medium
+    id: d08747e5-191c-46dc-af0f-c6e8f9e0a013
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
       content: >
@@ -2771,6 +2776,7 @@ modules:
     showInCustom: Room 2
     width: 900
     height: huge
+    id: 0a1efd7c-314d-4494-8d76-7f6bbf322ce1
   - url: https://edrys-labs.github.io/module-markdown-it/index.html
     config:
       content: >
@@ -3126,7 +3132,4 @@ modules:
     showInCustom: Room 2
     width: 900
     height: huge
-setupSigner: >-
-  BL8CNNOkAJGNpdR/k6eBTJKUkBda/ux9qlDO1J+XmO2LY+1go6tBvf+Fw8TjQL9BXkWndvADxRX1iEDmmQp1VZQ=
-setupSignature: >-
-  KKrignB04PJi/OPnd3zQYW55q4Bb8iIm36ZjU974cNTYtB6QA01BBKlMHpoGuGhYikv6wSmURR1+OI3AOWHfeQ==
+    id: c7b47fe9-1b2f-4ae6-8539-d5e5cd80e2f6

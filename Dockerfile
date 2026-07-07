@@ -74,9 +74,13 @@ RUN arduino-cli config init
 RUN arduino-cli config add board_manager.additional_urls \
     https://www.pjrc.com/teensy/package_teensy_index.json
 
-# Install Teensy support
-RUN arduino-cli core update-index \
+# Install Teensy support (increase timeout for large downloads)
+RUN arduino-cli config set network.connection_timeout 300s \
+ && arduino-cli core update-index \
  && arduino-cli core install teensy:avr
+
+# Install teensy_loader_cli for headless firmware uploads
+RUN apt-get update && apt-get install -y teensy-loader-cli && rm -rf /var/lib/apt/lists/*
 
 # Install micro-ROS Arduino library (ROS 2 Humble)
 # Install unzip (needed for GitHub release package)
@@ -93,9 +97,9 @@ RUN mkdir -p /root/Arduino/libraries \
  && rm -f micro_ros_arduino_v2.0.8-humble.zip
 
 # Patch Teensy platform for micro-ROS precompiled libraries
-RUN cp \
-    /root/Arduino/libraries/micro_ros_arduino/extras/patching_boards/platform_teensy.txt \
-    /root/.arduino15/packages/teensy/hardware/avr/1.61.0/platform.txt
+RUN TEENSY_AVR_DIR=$(find /root/.arduino15/packages/teensy/hardware/avr -maxdepth 1 -mindepth 1 -type d | head -1) \
+ && cp /root/Arduino/libraries/micro_ros_arduino/extras/patching_boards/platform_teensy.txt \
+    "${TEENSY_AVR_DIR}/platform.txt"
     
 # Make Arduino packages available to appuser
 RUN mkdir -p /home/appuser/.arduino15 \

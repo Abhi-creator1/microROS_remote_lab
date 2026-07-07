@@ -1,6 +1,6 @@
 {
-  "id": "n9OX5IKnHxSeM3FC",
-  "createdBy": "BL8CNNOkAJGNpdR/k6eBTJKUkBda/ux9qlDO1J+XmO2LY+1go6tBvf+Fw8TjQL9BXkWndvADxRX1iEDmmQp1VZQ=",
+  "id": "QccS75XG8dBciL4h",
+  "createdBy": "BGCmeuYMzuGrDVyWJemeIVNm7yGf6Gd2Gd+nvWG4Eq/IFihBDy4BNgivFkDY7tsqRfOsV5H60/iDJ6eWW92lgNw=",
   "dateCreated": 1761768674648,
   "name": "MicroROS_edu",
   "meta": {
@@ -32,7 +32,8 @@
       },
       "showInCustom": "microros",
       "width": 800,
-      "height": "tall"
+      "height": "tall",
+      "id": "435540e2-bae5-44ac-b2e8-5e6b49ae7adc"
     },
     {
       "url": "https://edrys-labs.github.io/module-station-stream/index.html",
@@ -48,7 +49,8 @@
       },
       "showInCustom": "microros",
       "width": "half",
-      "height": "medium"
+      "height": "medium",
+      "id": "854bb72f-9e04-42f7-8707-6c9526be1213"
     },
     {
       "url": "https://abhi-creator1.github.io/module-xpra-gui/index.html",
@@ -58,7 +60,8 @@
       "stationConfig": "",
       "showInCustom": "Station ros",
       "width": 800,
-      "height": "tall"
+      "height": "tall",
+      "id": "e8f8e66b-170b-42ba-a6a3-317d0d0555b5"
     },
     {
       "url": "https://edrys-labs.github.io/module-pyxtermjs/index.html",
@@ -76,7 +79,8 @@
       },
       "showInCustom": "Station ros",
       "width": "full",
-      "height": "tall"
+      "height": "tall",
+      "id": "3027ba80-d403-495a-ba87-6f05808a022e"
     },
     {
       "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
@@ -94,7 +98,8 @@
       },
       "showInCustom": "Station ros",
       "width": "half",
-      "height": "medium"
+      "height": "medium",
+      "id": "8b72158e-393f-4949-a553-1fc3ba775c3b"
     },
     {
       "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
@@ -112,12 +117,13 @@
       },
       "showInCustom": "Room 1",
       "width": 900,
-      "height": "huge"
+      "height": "huge",
+      "id": "c977ebc8-bcc9-456d-8c4f-ec61f1390b89"
     },
     {
       "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
       "config": {
-        "content": "# Module 1A Reference Solution\n\n## Step 1 – Create Project Directory\n\n```bash\nmkdir -p ~/workspace/microros_teensy\ncd ~/workspace/microros_teensy\ntouch microros_teensy.ino\nnano microros_teensy.ino\n```\n\n---\n\n## Step 2 – Implement the Firmware\n\nPaste the following code into `microros_teensy.ino`.\n\n```cpp\n#include <micro_ros_arduino.h>\n\n#include <rcl/rcl.h>\n#include <rclc/rclc.h>\n#include <rclc/executor.h>\n\n#include <std_msgs/msg/int32.h>\n\nrcl_publisher_t publisher;\nrcl_timer_t timer;\nrclc_executor_t executor;\nrclc_support_t support;\nrcl_allocator_t allocator;\nrcl_node_t node;\n\nstd_msgs__msg__Int32 sensor_msg;\n\nconst int LED_PIN = 13;\n\nvoid timer_callback(rcl_timer_t * timer, int64_t last_call_time)\n{\n  (void) last_call_time;\n\n  if (timer != NULL)\n  {\n    sensor_msg.data++;\n\n    digitalWrite(LED_PIN, !digitalRead(LED_PIN));\n\n    rcl_publish(&publisher, &sensor_msg, NULL);\n  }\n}\n\nvoid setup()\n{\n  pinMode(LED_PIN, OUTPUT);\n\n  set_microros_transports();\n\n  delay(2000);\n\n  allocator = rcl_get_default_allocator();\n\n  rclc_support_init(\n    &support,\n    0,\n    NULL,\n    &allocator);\n\n  rclc_node_init_default(\n    &node,\n    \"sensor_node\",\n    \"\",\n    &support);\n\n  rclc_publisher_init_default(\n    &publisher,\n    &node,\n    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),\n    \"/sensor_status\");\n\n  rclc_timer_init_default(\n    &timer,\n    &support,\n    RCL_MS_TO_NS(1000),\n    timer_callback);\n\n  rclc_executor_init(\n    &executor,\n    &support.context,\n    1,\n    &allocator);\n\n  rclc_executor_add_timer(\n    &executor,\n    &timer);\n\n  sensor_msg.data = 0;\n}\n\nvoid loop()\n{\n  rclc_executor_spin_some(\n    &executor,\n    RCL_MS_TO_NS(100));\n\n  delay(100);\n}\n```\n\n---\n\n## Step 3 – Compile the Firmware\n\n```bash\narduino-cli compile \\\n  --fqbn teensy:avr:teensy41 \\\n  ~/workspace/microros_teensy\n```\n\nExpected result:\n\n```text\nMemory Usage on Teensy 4.1:\nFLASH: ...\nRAM1: ...\nRAM2: ...\n```\n\nNo compilation errors should be reported.\n\n---\n\n## Step 4 – Upload the Firmware\n\nIdentify the Teensy device:\n\n```bash\nls /dev/ttyACM*\n```\n\nTypical output:\n\n```text\n/dev/ttyACM0\n```\n\nUpload:\n\n```bash\narduino-cli upload \\\n  -p /dev/ttyACM0 \\\n  --fqbn teensy:avr:teensy41 \\\n  ~/workspace/microros_teensy\n```\n\n---\n\n## Step 5 – Verify Firmware Execution\n\nAfter upload:\n\n* The Teensy resets automatically.\n* The onboard LED (Pin 13) toggles every second.\n* The firmware continuously increments and publishes a counter on:\n\n```text\n/sensor_status\n```\n\n---\n\n## What This Firmware Does\n\n### Node\n\n```text\nsensor_node\n```\n\n### Topic\n\n```text\n/sensor_status\n```\n\n### Message Type\n\n```text\nstd_msgs/msg/Int32\n```\n\n### Publish Rate\n\n```text\n1 Hz\n```\n\n### LED Behaviour\n\nThe onboard LED toggles every time a message is published.\n\n---\n\n## Expected Result\n\nAt the end of this module:\n\n* Teensy 4.1 contains a valid micro-ROS firmware.\n* A micro-ROS node is running on the microcontroller.\n* The firmware publishes data on `/sensor_status`.\n* The firmware is ready to communicate with a micro-ROS Agent in Module 1B.\n"
+        "content": "# Module 1A Reference Solution\n\n## Step 1 – Create Project Directory\n\n```bash\nmkdir -p ~/workspace/microros_teensy\ncd ~/workspace/microros_teensy\ntouch microros_teensy.ino\nnano microros_teensy.ino\n```\n\n---\n\n## Step 2 – Implement the Firmware\n\nPaste the following code into `microros_teensy.ino`.\n\n```cpp\n#include <micro_ros_arduino.h>\n\n#include <rcl/rcl.h>\n#include <rclc/rclc.h>\n#include <rclc/executor.h>\n\n#include <std_msgs/msg/int32.h>\n\nrcl_publisher_t publisher;\nrcl_timer_t timer;\nrclc_executor_t executor;\nrclc_support_t support;\nrcl_allocator_t allocator;\nrcl_node_t node;\n\nstd_msgs__msg__Int32 sensor_msg;\n\nconst int LED_PIN = 13;\n\nvoid timer_callback(rcl_timer_t * timer, int64_t last_call_time)\n{\n  (void) last_call_time;\n\n  if (timer != NULL)\n  {\n    sensor_msg.data++;\n\n    digitalWrite(LED_PIN, !digitalRead(LED_PIN));\n\n    rcl_publish(&publisher, &sensor_msg, NULL);\n  }\n}\n\nvoid setup()\n{\n  pinMode(LED_PIN, OUTPUT);\n\n  set_microros_transports();\n\n  delay(2000);\n\n  allocator = rcl_get_default_allocator();\n\n  rclc_support_init(\n    &support,\n    0,\n    NULL,\n    &allocator);\n\n  rclc_node_init_default(\n    &node,\n    \"sensor_node\",\n    \"\",\n    &support);\n\n  rclc_publisher_init_default(\n    &publisher,\n    &node,\n    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),\n    \"/sensor_status\");\n\n  rclc_timer_init_default(\n    &timer,\n    &support,\n    RCL_MS_TO_NS(1000),\n    timer_callback);\n\n  rclc_executor_init(\n    &executor,\n    &support.context,\n    1,\n    &allocator);\n\n  rclc_executor_add_timer(\n    &executor,\n    &timer);\n\n  sensor_msg.data = 0;\n}\n\nvoid loop()\n{\n  rclc_executor_spin_some(\n    &executor,\n    RCL_MS_TO_NS(100));\n\n  delay(100);\n}\n```\n\n---\n\n## Step 3 – Compile the Firmware\n\n```bash\n  arduino-cli compile --fqbn teensy:avr:teensy41 --output-dir ~/workspace/microros_teensy/build ~/workspace/microros_teensy\n```\n\nExpected result:\n\n```text\nMemory Usage on Teensy 4.1:\nFLASH: ...\nRAM1: ...\nRAM2: ...\n```\n\nNo compilation errors should be reported.\n\n---\n\n## Step 4 – Upload the Firmware\n\nIdentify the Teensy device:\n\n```bash\nls /dev/ttyACM*\n```\n\nTypical output:\n\n```text\n/dev/ttyACM0\n```\n\nUpload:\n\n```bash\n  sudo teensy_loader_cli --mcu=TEENSY41 -v -w ~/workspace/microros_teensy/build/microros_teensy.ino.hex\n```\n\n---\n\n## Step 5 – Verify Firmware Execution\n\nAfter upload:\n\n* The Teensy resets automatically.\n* The onboard LED (Pin 13) toggles every second.\n* The firmware continuously increments and publishes a counter on:\n\n```text\n/sensor_status\n```\n\n---\n\n## What This Firmware Does\n\n### Node\n\n```text\nsensor_node\n```\n\n### Topic\n\n```text\n/sensor_status\n```\n\n### Message Type\n\n```text\nstd_msgs/msg/Int32\n```\n\n### Publish Rate\n\n```text\n1 Hz\n```\n\n### LED Behaviour\n\nThe onboard LED toggles every time a message is published.\n\n---\n\n## Expected Result\n\nAt the end of this module:\n\n* Teensy 4.1 contains a valid micro-ROS firmware.\n* A micro-ROS node is running on the microcontroller.\n* The firmware publishes data on `/sensor_status`.\n* The firmware is ready to communicate with a micro-ROS Agent in Module 1B.\n"
       },
       "studentConfig": {
         "content": ""
@@ -130,7 +136,8 @@
       },
       "showInCustom": "Room 1",
       "width": 900,
-      "height": "huge"
+      "height": "huge",
+      "id": "c715b927-48d2-4d6d-b7bf-e2014e15e408"
     },
     {
       "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
@@ -148,7 +155,8 @@
       },
       "showInCustom": "Room 3",
       "width": 900,
-      "height": "huge"
+      "height": "huge",
+      "id": "e1a326a1-9fa4-45fa-ba9a-b164088e56ae"
     },
     {
       "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
@@ -166,7 +174,8 @@
       },
       "showInCustom": "Room 3",
       "width": 900,
-      "height": "huge"
+      "height": "huge",
+      "id": "2174cf11-f19f-4541-a882-05f280f01695"
     },
     {
       "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
@@ -184,7 +193,8 @@
       },
       "showInCustom": "Room 4",
       "width": 2000,
-      "height": "huge"
+      "height": "huge",
+      "id": "02a8291b-83c2-48ad-b264-521a03d5b9e0"
     },
     {
       "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
@@ -202,7 +212,8 @@
       },
       "showInCustom": "lobby",
       "width": "full",
-      "height": "tall"
+      "height": "tall",
+      "id": "0e35176b-9b00-4bb7-8a38-22ffd9dc020e"
     },
     {
       "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
@@ -220,7 +231,8 @@
       },
       "showInCustom": "teacher-only, station_ros, microros, lobby",
       "width": "third",
-      "height": "medium"
+      "height": "medium",
+      "id": "d08747e5-191c-46dc-af0f-c6e8f9e0a013"
     },
     {
       "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
@@ -238,7 +250,8 @@
       },
       "showInCustom": "Room 2",
       "width": 900,
-      "height": "huge"
+      "height": "huge",
+      "id": "0a1efd7c-314d-4494-8d76-7f6bbf322ce1"
     },
     {
       "url": "https://edrys-labs.github.io/module-markdown-it/index.html",
@@ -256,9 +269,8 @@
       },
       "showInCustom": "Room 2",
       "width": 900,
-      "height": "huge"
+      "height": "huge",
+      "id": "c7b47fe9-1b2f-4ae6-8539-d5e5cd80e2f6"
     }
-  ],
-  "setupSigner": "BL8CNNOkAJGNpdR/k6eBTJKUkBda/ux9qlDO1J+XmO2LY+1go6tBvf+Fw8TjQL9BXkWndvADxRX1iEDmmQp1VZQ=",
-  "setupSignature": "KKrignB04PJi/OPnd3zQYW55q4Bb8iIm36ZjU974cNTYtB6QA01BBKlMHpoGuGhYikv6wSmURR1+OI3AOWHfeQ=="
+  ]
 }
