@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot name="asrs_robot">
+
+  <!-- Groups -->
+  <group name="arm">
+    <chain base_link="base_link" tip_link="link3"/>
+  </group>
+
+  <!-- Arm including revolute3 (wrist/gripper rotation) -->
+  <group name="arm4">
+    <chain base_link="base_link" tip_link="tool0"/>
+  </group>
+
+  <group name="gripper">
+    <joint name="revolute3"/>
+    <link  name="tool0"/>
+  </group>
+
+  <!-- End effector -->
+  <end_effector name="tool0" parent_link="link3" group="gripper"/>
+
+  <!-- Virtual joint -->
+  <!-- map is treated as the world frame -->
+  <virtual_joint name="map_to_base_link" type="fixed" parent_frame="world" child_link="map"/>
+
+  <!-- Named states (ARM 3-DOF) -->
+  <group_state name="home" group="arm">
+    <joint name="continuous" value="0.0"/>
+    <joint name="revolute1"  value="0.0"/>
+    <joint name="revolute2"  value="0.0"/>
+  </group_state>
+
+  <group_state name="shut_down" group="arm">
+    <joint name="continuous" value="0.0"/>
+    <joint name="revolute1"  value="0.0"/>
+    <joint name="revolute2"  value="0.0"/>
+  </group_state>
+
+  <!-- Named states (ARM4 4-DOF including revolute3) -->
+  <group_state name="home" group="arm4">
+    <joint name="continuous" value="0.0"/>
+    <joint name="revolute1"  value="0.0"/>
+    <joint name="revolute2"  value="0.0"/>
+    <joint name="revolute3"  value="0.0"/>
+  </group_state>
+
+  <group_state name="shut_down" group="arm4">
+    <joint name="continuous" value="0.0"/>
+    <joint name="revolute1"  value="0.0"/>
+    <joint name="revolute2"  value="0.35"/>
+    <joint name="revolute3"  value="-0.25"/>
+  </group_state>
+
+  <!-- Pick/place sequence states (ARM4) -->
+  <group_state name="pregrasp" group="arm4">
+    <joint name="continuous" value="-1.4136"/>
+    <joint name="revolute1"  value="-0.1633"/>
+    <joint name="revolute2"  value="-0.4252"/>
+    <joint name="revolute3"  value="-2.1694"/>
+  </group_state>
+
+  <group_state name="grasp" group="arm4">
+    <joint name="continuous" value="-1.4238"/>
+    <joint name="revolute1"  value="-0.418692"/>
+    <joint name="revolute2"  value="-0.5429"/>
+    <joint name="revolute3"  value="-2.0000"/>
+  </group_state>
+
+  <group_state name="lift" group="arm4">
+    <joint name="continuous" value="-1.4232"/>
+    <joint name="revolute1"  value="-0.2490"/>
+    <joint name="revolute2"  value="-0.5429"/>
+    <joint name="revolute3"  value="-2.2800"/>
+  </group_state>
+
+  <group_state name="preplace" group="arm4">
+    <joint name="continuous" value="1.5885"/>
+    <joint name="revolute1"  value="-0.2592"/>
+    <joint name="revolute2"  value="-0.5488"/>
+    <joint name="revolute3"  value="-2.1745"/>
+  </group_state>
+
+  <group_state name="place" group="arm4">
+    <joint name="continuous" value="1.5882"/>
+    <joint name="revolute1"  value="-0.5151"/>
+    <joint name="revolute2"  value="-0.5488"/>
+    <joint name="revolute3"  value="-2.1745"/>
+  </group_state>
+
+  <group_state name="prehome" group="arm4">
+    <joint name="continuous" value="1.5882"/>
+    <joint name="revolute1"  value="-0.2592"/>
+    <joint name="revolute2"  value="-0.5488"/>
+    <joint name="revolute3"  value="-2.2745"/>
+  </group_state>
+
+  <!-- Named states (GRIPPER group) -->
+  <group_state name="home" group="gripper">
+    <joint name="revolute3" value="0.0"/>
+  </group_state>
+
+  <group_state name="shut_down" group="gripper">
+    <joint name="revolute3" value="-0.25"/>
+  </group_state>
+
+  <!-- Collision disables -->
+  <disable_collisions link1="base_link" link2="tool0" reason="Never"/>
+  <disable_collisions link1="base_link" link2="link1"   reason="Adjacent"/>
+  <disable_collisions link1="base_link" link2="link2"   reason="Never"/>
+  <disable_collisions link1="base_link" link2="link3"   reason="Never"/>
+  <disable_collisions link1="tool0"   link2="link1"   reason="Never"/>
+  <disable_collisions link1="tool0"   link2="link2"   reason="Never"/>
+  <disable_collisions link1="tool0"   link2="link3"   reason="Adjacent"/>
+  <disable_collisions link1="link1"     link2="link2"   reason="Adjacent"/>
+  <disable_collisions link1="link1"     link2="link3"   reason="Never"/>
+  <disable_collisions link1="link2"     link2="link3"   reason="Adjacent"/>
+
+</robot>

@@ -1,5 +1,23 @@
-# ROS workspace
-workspace/
+# ROS workspace build artifacts (keep source)
+workspace/ros2_ws/build/
+workspace/ros2_ws/install/
+workspace/ros2_ws/log/
+workspace/microros_ws/build/
+workspace/microros_ws/install/
+workspace/microros_ws/log/
+
+# Old reference project (not part of new packages)
+workspace/ros2_ws/src/Closed-Loop-Control-and-Trajectory-Planning-for-a-4-DOF-Robotic-Arm/
+
+# Arduino/Teensy build artifacts
+*.elf
+*.eep
+*.hex
+*.lst
+*.sym
+
+# micro-ROS workspace source (cloned at runtime via microros_install)
+workspace/microros_ws/src/
 
 # XPRA module maintained in separate repository
 module-xpra-gui/

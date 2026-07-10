@@ -26,11 +26,12 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update \
     ros-humble-moveit \
  && rm -rf /var/lib/apt/lists/*
 
-# Install ros2_control + controllers
+# Install ros2_control + controllers + topic_tools
 RUN DEBIAN_FRONTEND=noninteractive apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     ros-humble-ros2-control \
     ros-humble-ros2-controllers \
+    ros-humble-topic-tools \
  && rm -rf /var/lib/apt/lists/*
 
 # micro-ROS dependency management
@@ -96,11 +97,14 @@ RUN mkdir -p /root/Arduino/libraries \
  && mv micro_ros_arduino-2.0.8-humble /root/Arduino/libraries/micro_ros_arduino \
  && rm -f micro_ros_arduino_v2.0.8-humble.zip
 
+# Install SCServo library (for wrist SCS15 servo)
+RUN arduino-cli lib install SCServo
+
 # Patch Teensy platform for micro-ROS precompiled libraries
 RUN TEENSY_AVR_DIR=$(find /root/.arduino15/packages/teensy/hardware/avr -maxdepth 1 -mindepth 1 -type d | head -1) \
  && cp /root/Arduino/libraries/micro_ros_arduino/extras/patching_boards/platform_teensy.txt \
     "${TEENSY_AVR_DIR}/platform.txt"
-    
+
 # Make Arduino packages available to appuser
 RUN mkdir -p /home/appuser/.arduino15 \
  && mkdir -p /home/appuser/Arduino \

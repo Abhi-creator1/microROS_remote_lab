@@ -1,0 +1,41 @@
+move_group:
+  ros__parameters:
+
+    trajectory_execution:
+      moveit_manage_controllers: false
+      moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+      execution_duration_monitoring: true
+      allowed_start_tolerance: 0.6
+
+    moveit_simple_controller_manager:
+      controller_names:
+        - arm_controller
+        - gripper_controller
+
+      arm_controller:
+        type: FollowJointTrajectory
+        action_ns: follow_joint_trajectory
+        default: true
+        joints:
+          - continuous
+          - revolute1
+          - revolute2
+          - revolute3
+        constraints:
+          goal_time: 10.0
+          stopped_velocity_tolerance: 0.05
+          continuous: { goal: 0.20, trajectory: 0.40 }
+          revolute1:  { goal: 0.20, trajectory: 0.40 }
+          revolute2:  { goal: 0.20, trajectory: 0.40 }
+          revolute3:  { goal: 0.35, trajectory: 0.60 }
+
+      gripper_controller:
+        type: FollowJointTrajectory
+        action_ns: follow_joint_trajectory
+        default: false
+        joints:
+          - revolute3
+        constraints:
+          goal_time: 4.0
+          stopped_velocity_tolerance: 0.05
+          revolute3: { goal: 0.35, trajectory: 0.60 }
