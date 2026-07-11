@@ -25,6 +25,7 @@
 #include <rcl/rcl.h>
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
+#include <rmw_microros/rmw_microros.h>
 
 #include <sensor_msgs/msg/joint_state.h>
 #include <std_msgs/msg/float64_multi_array.h>
@@ -1225,6 +1226,17 @@ void setup(){
   forcePinsSafeLow();
 
   set_microros_transports();
+
+  // Retry until the micro-ROS agent is reachable, instead of failing setup()
+  // outright if it isn't up yet (agent may be started after the board boots).
+  // Slow LED blink (500ms) distinguishes "waiting for agent" from the fast
+  // error_blink_loop() below (120ms), which signals a genuine init failure.
+  pinMode(LED_BUILTIN, OUTPUT);
+  while (rmw_uros_ping_agent(100, 1) != RMW_RET_OK) {
+    digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+    delay(500);
+  }
+  digitalWrite(LED_BUILTIN, LOW);
 
   analogReadResolution(12);
   analogReadAveraging(4);

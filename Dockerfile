@@ -55,6 +55,11 @@ RUN pip3 install --no-cache-dir \
     flask-cors \
     eventlet
 
+# Allow the Edrys Lite frontend to connect to pyxtermjs
+RUN sed -i \
+    's/socketio = SocketIO(app)/socketio = SocketIO(app, cors_allowed_origins="https:\/\/edrys-labs.github.io")/' \
+    /usr/local/lib/python3.10/dist-packages/pyxtermjs/app.py
+
 # ============================================================
 # 4. Setup oh-my-zsh for appuser
 # ============================================================
@@ -168,9 +173,9 @@ RUN mkdir -p /root/Arduino/libraries \
  && rm -f micro_ros_arduino_v2.0.8-humble.zip
 
 # ============================================================
-# 16. SCServo library (for wrist SCS15 servo)
+# 16. SCServo + AccelStepper libraries (for wrist SCS15 servo + arm steppers)
 # ============================================================
-RUN arduino-cli lib install SCServo
+RUN arduino-cli lib install SCServo AccelStepper
 
 # ============================================================
 # 17. Patch Teensy platform.txt for micro-ROS precompiled libs

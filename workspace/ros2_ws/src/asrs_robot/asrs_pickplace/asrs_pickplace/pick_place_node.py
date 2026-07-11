@@ -54,7 +54,7 @@ class PickPlaceNode(Node):
         cbg = ReentrantCallbackGroup()
 
         self._move_client = ActionClient(
-            self, MoveGroup, "/move_group", callback_group=cbg
+            self, MoveGroup, "/move_action", callback_group=cbg
         )
 
         self._jaw_pub = self.create_publisher(Float64, "/teensy_jaw_target", 10)
@@ -91,9 +91,9 @@ class PickPlaceNode(Node):
         return response
 
     def _run_sequence(self) -> bool:
-        self.get_logger().info("Waiting for /move_group action server...")
+        self.get_logger().info("Waiting for /move_action action server...")
         if not self._move_client.wait_for_server(timeout_sec=30.0):
-            self.get_logger().error("/move_group action server not available")
+            self.get_logger().error("/move_action action server not available")
             return False
 
         self.get_logger().info("Starting pick-and-place sequence")
