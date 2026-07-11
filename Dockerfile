@@ -90,6 +90,8 @@ RUN apt-get update \
     ros-humble-ros2-controllers \
     ros-humble-topic-tools \
     ros-humble-xacro \
+    ros-humble-joint-state-publisher \
+    ros-humble-joint-state-publisher-gui \
  && rm -rf /var/lib/apt/lists/*
 
 # ============================================================
