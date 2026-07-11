@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="asrs_robot">
+
+  <!-- Properties -->
+  <xacro:property name="effort_limit" value="10"/>
+  <xacro:property name="velocity_limit" value="4"/>
+  <xacro:property name="default_color" value="0.79216 0.81961 0.93333 1"/>
+  <xacro:property name="gripper_color" value="0.77647 0.75686 0.73725 1"/>
+
+  <!-- Map (fixed) link -->
+  <link name="map"/>
+
+  <!-- Fixed joint: map -> base_link -->
+  <joint name="map_to_base" type="fixed">
+    <parent link="map"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Base link -->
+  <link name="base_link">
+    <inertial>
+      <origin xyz="-0.069523 -0.079398 -0.058434" rpy="0 0 0"/>
+      <mass value="0.20573"/>
+      <inertia ixx="0.00051817" ixy="6.5698E-07" ixz="-5.033E-06" iyy="0.00075704" iyz="-4.5357E-06" izz="0.0011685"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0.111"/>
+      <geometry>
+        <mesh filename="package://asrs_description/meshes/base_link.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="default">
+        <color rgba="${default_color}"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.111"/>
+      <geometry>
+        <mesh filename="package://asrs_description/meshes/base_link.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Link1 -->
+  <link name="link1">
+    <inertial>
+      <origin xyz="0.0020885 0.026837 0.029552" rpy="0 0 0"/>
+      <mass value="0.38497"/>
+      <inertia ixx="0.0003181" ixy="-1.506E-07" ixz="-2.2651E-09" iyy="0.00029928" iyz="-1.4134E-07" izz="0.00013129"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://asrs_description/meshes/link1.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="default">
+        <color rgba="${default_color}"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://asrs_description/meshes/link1.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Joint 1 -->
+  <joint name="continuous" type="revolute">
+    <origin xyz="-0.067703 -0.078285 0.1046" rpy="1.5708 0 1.5708"/>
+    <parent link="base_link"/>
+    <child link="link1"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="-2.9670597" upper="2.9670597" effort="${effort_limit}" velocity="${velocity_limit}"/>
+  </joint>
+
+  <!-- Link2 -->
+  <link name="link2">
+    <inertial>
+      <origin xyz="-0.040353 0.17518 -0.0034469" rpy="0 0 0"/>
+      <mass value="0.36914"/>
+      <inertia ixx="0.00030452" ixy="1.0393E-08" ixz="7.8442E-10" iyy="0.00011371" iyz="3.6775E-07" izz="0.00028993"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://asrs_description/meshes/link2.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="default">
+        <color rgba="${default_color}"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://asrs_description/meshes/link2.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Joint 2 -->
+  <joint name="revolute1" type="revolute">
+    <origin xyz="0.042975 0.036991 0.0041635" rpy="-0.2020 0 0"/>
+    <parent link="link1"/>
+    <child link="link2"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-0.50" upper="0.20" effort="${effort_limit}" velocity="${velocity_limit}"/>
+  </joint>
+
+  <!-- Link3 -->
+  <link name="link3">
+    <inertial>
+      <origin xyz="-0.072457 0.0000235 0.0073516" rpy="0 0 0"/>
+      <mass value="0.07953"/>
+      <inertia ixx="2.4647E-05" ixy="2.6546E-13" ixz="-8.0893E-06" iyy="7.4948E-05" iyz="-4.4103E-11" izz="6.1896E-05"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://asrs_description/meshes/link3.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="default">
+        <color rgba="${default_color}"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://asrs_description/meshes/link3.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Joint 3 -->
+  <joint name="revolute2" type="revolute">
+    <origin xyz="-0.042975 0.24799 -0.026649" rpy="1.5708 -1.2680 -1.5708"/>
+    <parent link="link2"/>
+    <child link="link3"/>
+    <axis xyz="0 0 -1"/>
+    <limit lower="-0.7853" upper="1.0472" effort="${effort_limit}" velocity="${velocity_limit}"/>
+  </joint>
+
+  <!-- Gripper -->
+  <link name="tool0">
+    <inertial>
+      <origin xyz="0.052069 0.041143 0.003655" rpy="0 0 0"/>
+      <mass value="0.10213"/>
+      <inertia ixx="2.1369E-05" ixy="-5.7056E-06" ixz="-4.1030E-06" iyy="4.0032E-05" iyz="-1.6384E-06" izz="4.6158E-05"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://asrs_description/meshes/gripper.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="gripper_material">
+        <color rgba="${gripper_color}"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://asrs_description/meshes/gripper.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Joint 4 -->
+  <joint name="revolute3" type="revolute">
+    <origin xyz="-0.122 0 0" rpy="-1.5708 0 -1.6945"/>
+    <parent link="link3"/>
+    <child link="tool0"/>
+    <axis xyz="0 -1 0"/>
+    <limit lower="-2.60" upper="0.0" effort="${effort_limit}" velocity="${velocity_limit}"/>
+  </joint>
+
+</robot>

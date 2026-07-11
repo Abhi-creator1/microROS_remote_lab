@@ -1,0 +1,11 @@
+move_group:
+  ros__parameters:
+    moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControllerManager
+
+    trajectory_execution:
+      moveit_manage_controllers: false
+      allowed_start_tolerance: 0.8
+      allowed_goal_duration_margin: 30.0
+      allowed_execution_duration_scaling: 8.0
+      execution_duration_monitoring: true
+      trajectory_duration_monitoring: true

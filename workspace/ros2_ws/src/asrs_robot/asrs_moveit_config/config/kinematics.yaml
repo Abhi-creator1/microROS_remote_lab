@@ -1,0 +1,14 @@
+arm:
+  kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin
+  position_only_ik: false
+  solve_type: Speed
+
+arm4:
+  kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin
+  position_only_ik: false
+  solve_type: Speed
+
+gripper:
+  kinematics_solver: kdl_kinematics_plugin/KDLKinematicsPlugin
+  position_only_ik: false
+  solve_type: Speed
